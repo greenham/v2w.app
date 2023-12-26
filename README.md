@@ -1,30 +1,18 @@
-# React + TypeScript + Vite
+# volumio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+_volumio_ is a volume-to-weight converter for the kitchen.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+It uses [known densities](http://blog.khymos.org/wp-content/2014/01/volume-weight-conversion-v2.xlsm) of specific ingredients to calculate the weight of a given volume of that ingredient.
 
-## Expanding the ESLint configuration
+Other sites/apps don't take this data into account and simply give you a static conversion.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Why Weigh?
 
-- Configure the top-level `parserOptions` property like this:
+1. **Accuracy.** See this video: [https://youtu.be/0uevI4-j-6A](https://youtu.be/0uevI4-j-6A)
+2. **Speed & Efficiency.** See this video: [https://youtu.be/YEt0I7I3MDM](https://youtu.be/YEt0I7I3MDM)
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+From [ChefSteps.com](https://www.chefsteps.com/activities/what-you-ll-need-scale):
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+> Just as a good thermometer eliminates a lot of the uncertainty and guesswork from cooking, the ease of quickly weighing ingredients avoids a lot of fumbling around with inaccurate measuring spoons and cups, and increases the consistency of your cooking.
