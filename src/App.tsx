@@ -8,6 +8,10 @@ type TRecipeLine = {
   unit?: string;
   ingredient?: string;
 };
+const numberFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 const unitToGramsMap = new Map<string, number>([
   ["ml", 1],
@@ -86,17 +90,24 @@ function App() {
     setRecipeLines([...recipeLines, newLine]);
   };
   return (
-    <Container>
+    <Container className="mt-3 mb-5">
+      <Stack direction="horizontal" gap={3} className="mb-3">
+        <Image src={logoImageUrl} width={64} height={64} />
+        <Stack>
+          <h1 className="mb-0">volum.io</h1>
+          <span>a free volume to weight converter for the kitchen</span>
+        </Stack>
+      </Stack>
       <datalist id="ingredients">
         {ingredients.map((i, idx) => (
           <option value={i} key={idx} />
         ))}
       </datalist>
-      <Table striped>
+      <Table striped responsive>
         <thead>
           <tr className="fs-2">
             <th style={{ width: "10%" }}>Amount</th>
-            <th style={{ width: "20%" }}>Unit</th>
+            <th style={{ width: "15%" }}>Unit</th>
             <th>Ingredient</th>
             <th style={{ width: "12%" }}>Grams</th>
             <th style={{ width: "12%" }}>Pounds</th>
@@ -110,13 +121,6 @@ function App() {
           ))}
         </tbody>
       </Table>
-      <Stack direction="horizontal" gap={3}>
-        <Image src={logoImageUrl} width={64} height={64} />
-        <Stack>
-          <h1 className="mb-0">volum.io</h1>
-          <span>a free volume to weight converter for the kitchen</span>
-        </Stack>
-      </Stack>
     </Container>
   );
 }
@@ -156,14 +160,14 @@ function RecipeLine(props: TRecipeLineProps) {
       if (grams >= 1000) {
         setGrams(
           <code>
-            {(grams / 1000).toFixed(2)}
+            {numberFormatter.format(grams / 1000)}
             <small className="text-muted">kg</small>
           </code>
         );
       } else {
         setGrams(
           <code>
-            {grams.toFixed(2)}
+            {numberFormatter.format(grams)}
             <small className="text-muted">g</small>
           </code>
         );
@@ -173,13 +177,13 @@ function RecipeLine(props: TRecipeLineProps) {
       const ounces = grams / gramsPerOunce;
       setPounds(
         <code>
-          {pounds.toFixed(2)}
+          {numberFormatter.format(pounds)}
           <small className="text-muted">lb</small>
         </code>
       );
       setOunces(
         <code>
-          {ounces.toFixed(2)}
+          {numberFormatter.format(ounces)}
           <small className="text-muted">oz</small>
         </code>
       );
@@ -198,7 +202,7 @@ function RecipeLine(props: TRecipeLineProps) {
             type="number"
             inputMode="decimal"
             value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            onChange={(e) => setAmount(Math.abs(Number(e.target.value)))}
             size="lg"
           />
         ) : (
