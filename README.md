@@ -12,8 +12,8 @@ Other sites/apps don't take this data into account and simply give you a static 
 
 ## Why Weigh?
 
-1. **Accuracy.** See this video: [https://youtu.be/0uevI4-j-6A](https://youtu.be/0uevI4-j-6A)
-2. **Speed & Efficiency.** See this video: [https://youtu.be/YEt0I7I3MDM](https://youtu.be/YEt0I7I3MDM)
+1. **Accuracy.** _See this video:_ [https://youtu.be/0uevI4-j-6A](https://youtu.be/0uevI4-j-6A)
+2. **Speed & Efficiency.** _See this video:_ [https://youtu.be/YEt0I7I3MDM](https://youtu.be/YEt0I7I3MDM)
 
 From [ChefSteps.com](https://www.chefsteps.com/activities/what-you-ll-need-scale):
 
