@@ -7,9 +7,6 @@ type TRecipeLine = {
   amount?: number;
   unit?: string;
   ingredient?: string;
-  grams?: number;
-  pounds?: number;
-  ounces?: number;
 };
 
 const unitToGramsMap = new Map<string, number>([
@@ -67,6 +64,28 @@ function RecipeLine(props: TRecipeLineProps) {
   const [amount, setAmount] = React.useState(line?.amount || undefined);
   const [unit, setUnit] = React.useState(line?.unit || "");
   const [ingredient, setIngredient] = React.useState(line?.ingredient || "");
+  const [grams, setGrams] = React.useState(0);
+  const [pounds, setPounds] = React.useState(0);
+  const [ounces, setOunces] = React.useState(0);
+
+  React.useEffect(() => {
+    if (amount && unit && ingredient) {
+      const density = densities.find((d) => d.name === ingredient);
+      if (density) {
+        const grams = density.g_whole
+          ? amount * density.g_whole
+          : amount * density.g_ml * unitToGramsMap.get(unit)!;
+        const pounds = grams / gramsPerPound;
+        const ounces = grams / gramsPerOunce;
+        setAmount(amount);
+        setUnit(unit);
+        setIngredient(ingredient);
+        setGrams(grams);
+        setPounds(pounds);
+        setOunces(ounces);
+      }
+    }
+  }, [amount, unit, ingredient]);
 
   return (
     <tr>
@@ -114,9 +133,9 @@ function RecipeLine(props: TRecipeLineProps) {
           onChange={(e) => setIngredient(e.target.value)}
         />
       </td>
-      <td>{line?.grams}</td>
-      <td>{line?.pounds}</td>
-      <td>{line?.ounces}</td>
+      <td>{grams}</td>
+      <td>{pounds}</td>
+      <td>{ounces}</td>
     </tr>
   );
 }
