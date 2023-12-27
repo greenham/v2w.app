@@ -54,6 +54,8 @@ const metricVolumeOptions = [
   { value: "l", label: "liters" },
 ];
 const weightUnitOptions = [
+  { value: "g", label: "grams" },
+  { value: "kg", label: "kilograms" },
   { value: "oz", label: "ounces" },
   { value: "lb", label: "pounds" },
 ];
@@ -79,36 +81,24 @@ const unitLabels = new Map<string, string>([
   ...weightUnitOptions.map((o) => [o.value, o.label] as const),
 ]);
 
-const formatWeightResults = (results: Array<[number, string]>) => {
-  return (
-    <code>{results.map((r, idx) => formatWeightResult(r[0], r[1], idx))}</code>
-  );
-};
-const formatWeightResult = (value: number, label: string, idx: number) => {
-  return (
-    <span key={idx}>
-      {numberFormatter.format(value)}
-      <small className="text-muted">{label}</small>&nbsp;
-    </span>
-  );
-};
-
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  // const chocolateChipCookiesRecipe = [
-  //   { amount: "1", unit: "c", ingredient: "butter" },
-  //   { amount: "1", unit: "c", ingredient: "sugar" },
-  //   { amount: "1", unit: "c", ingredient: "sugar, brown" },
-  //   { amount: "2", unit: "whole", ingredient: "egg" },
-  //   { amount: "2", unit: "t", ingredient: "vanilla extract" },
-  //   { amount: "1", unit: "t", ingredient: "baking soda" },
-  //   { amount: "2", unit: "t", ingredient: "water" },
-  //   { amount: "1/2", unit: "t", ingredient: "salt, table" },
-  //   { amount: "3", unit: "c", ingredient: "flour" },
-  //   { amount: "2", unit: "c", ingredient: "chocolate chips" },
-  //   { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
-  // ].reverse();
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
+  const chocolateChipCookiesRecipe = [
+    { amount: "1", unit: "c", ingredient: "butter" },
+    { amount: "1", unit: "c", ingredient: "sugar" },
+    { amount: "1", unit: "c", ingredient: "sugar, brown" },
+    { amount: "2", unit: "whole", ingredient: "egg" },
+    { amount: "2", unit: "t", ingredient: "vanilla extract" },
+    { amount: "1", unit: "t", ingredient: "baking soda" },
+    { amount: "2", unit: "t", ingredient: "water" },
+    { amount: "1/2", unit: "t", ingredient: "salt, table" },
+    { amount: "3", unit: "c", ingredient: "flour" },
+    { amount: "2", unit: "c", ingredient: "chocolate chips" },
+    { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
+  ].reverse();
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
+    chocolateChipCookiesRecipe
+  );
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
@@ -126,7 +116,7 @@ function App() {
           <option value={i} key={idx} />
         ))}
       </datalist>
-      <Table striped responsive>
+      <Table responsive>
         <thead>
           <tr className="fs-2">
             <th style={{ width: "20%" }}>Amount</th>
@@ -152,6 +142,11 @@ type TRecipeLineProps = {
   isNew?: boolean;
   onLineConverted?: (line: TRecipeLine) => void;
 };
+type TIngredientDensity = {
+  name: string;
+  g_whole: number | null;
+  g_ml: number;
+};
 function RecipeLine(props: TRecipeLineProps) {
   const defaults = {
     amount: "",
@@ -164,9 +159,10 @@ function RecipeLine(props: TRecipeLineProps) {
   const [amount, setAmount] = React.useState(defaults.amount);
   const [unit, setUnit] = React.useState(defaults.unit);
   const [ingredient, setIngredient] = React.useState(defaults.ingredient);
-  const [metricWeight, setMetricWeight] = React.useState(<></>);
-  const [usWeight, setUsWeight] = React.useState(<></>);
+  const [metricWeight, setMetricWeight] = React.useState<[number, string]>();
+  const [usWeight, setUsWeight] = React.useState<[number, string]>();
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
+  const [densityUsed, setDensityUsed] = React.useState<TIngredientDensity>();
 
   const resetNewLine = () => {
     setAmount(defaults.amount);
@@ -202,21 +198,29 @@ function RecipeLine(props: TRecipeLineProps) {
             .reduce((p, c) => p / c)
         : Number(amount);
 
-      // convert to grams
+      // convert selected unit to grams
       let grams;
-      if (unit === "oz" || unit === "lb") {
+      if (unit === "g" || unit === "kg") {
+        grams = amountNum * (unit === "g" ? 1 : 1000);
+      } else if (unit === "oz" || unit === "lb") {
         // straight conversion, no density needed
         grams = amountNum * (unit === "oz" ? gramsPerOunce : gramsPerPound);
       } else {
         // find density for ingredient
         const density = densities.find((d) => d.name === ingredient);
         if (density) {
+          setDensityUsed(density);
+
+          // if units are currently "whole", but g_whole is null, force to default unit
+          let unitUsed =
+            unit === "whole" && !density.g_whole ? defaults.unit : unit;
+
           // do the conversion (units are ignored for "whole" ingredients)
           grams = density.g_whole
             ? amountNum * density.g_whole
-            : amountNum * density.g_ml * unitToGramsMap.get(unit)!;
+            : amountNum * density.g_ml * unitToGramsMap.get(unitUsed)!;
 
-          setUnit(density.g_whole ? "whole" : unit);
+          setUnit(density.g_whole ? "whole" : unitUsed);
         } else {
           // no matching ingredient found, do nothing
           setHasValidConversion(false);
@@ -224,29 +228,25 @@ function RecipeLine(props: TRecipeLineProps) {
         }
       }
       if (grams >= 1000) {
-        setMetricWeight(formatWeightResults([[grams / 1000, "kg"]]));
+        setMetricWeight([grams / 1000, "kilograms"]);
       } else {
-        setMetricWeight(formatWeightResults([[grams, "g"]]));
+        setMetricWeight([grams, "grams"]);
       }
 
       const ounces = grams / gramsPerOunce;
       if (ounces >= 16) {
-        const pounds = Math.floor(ounces / 16);
-        const remainder = ounces % 16;
-        setUsWeight(
-          formatWeightResults([
-            [pounds, "lb"],
-            [remainder, "oz"],
-          ])
-        );
+        // const pounds = Math.floor(ounces / 16);
+        const pounds = ounces / 16;
+        // const remainder = ounces % 16;
+        setUsWeight([pounds, "pounds"]);
       } else {
-        setUsWeight(formatWeightResults([[ounces, "oz"]]));
+        setUsWeight([ounces, "ounces"]);
       }
 
       setHasValidConversion(true);
     } else {
-      setMetricWeight(<></>);
-      setUsWeight(<></>);
+      setMetricWeight(undefined);
+      setUsWeight(undefined);
       setHasValidConversion(false);
     }
   }, [amount, unit, ingredient]);
@@ -258,7 +258,7 @@ function RecipeLine(props: TRecipeLineProps) {
           isNew ? "table-active table-group-divider" : "table-group-divider"
         }
       >
-        <td className="fs-2 text-end">
+        <td className="fs-3 text-end" valign="middle">
           {isNew || isBeingEdited ? (
             <Form.Control
               type="text"
@@ -270,10 +270,13 @@ function RecipeLine(props: TRecipeLineProps) {
               className="text-end"
             />
           ) : (
-            amount
+            <Stack direction="horizontal">
+              {/* <i className="fa-solid fa-flask"></i> */}
+              <span className="ms-auto">{amount}</span>
+            </Stack>
           )}
         </td>
-        <td className="fs-2">
+        <td className="fs-3" valign="middle">
           {isNew || isBeingEdited ? (
             <Form.Select
               value={unit}
@@ -295,7 +298,7 @@ function RecipeLine(props: TRecipeLineProps) {
             <small className="text-muted">{unitLabels.get(unit) || unit}</small>
           )}
         </td>
-        <td className="fs-2">
+        <td className="fs-2" valign="middle">
           {isNew || isBeingEdited ? (
             <InputGroup>
               {isNew ? (
@@ -347,7 +350,7 @@ function RecipeLine(props: TRecipeLineProps) {
           ) : (
             <Stack>
               <Stack direction="horizontal">
-                {ingredient}
+                <Badge bg="info">{ingredient}</Badge>
                 <Button
                   onClick={() => setIsBeingEdited(true)}
                   className="ms-auto"
@@ -360,22 +363,39 @@ function RecipeLine(props: TRecipeLineProps) {
           )}
         </td>
       </tr>
-      {hasValidConversion && (
-        <tr>
-          <td className="text-end" valign="middle">
-            <i className="fa-solid fa-weight-scale px-2"></i>
-            <i className="fa-solid fa-equals"></i>
-          </td>
-          <td colSpan={2} className="fs-2">
-            <Stack direction="horizontal" gap={1}>
-              <Badge pill bg="primary">
-                {metricWeight}
-              </Badge>
-              <small>or</small>
-              <Badge pill bg="secondary">
-                {usWeight}
-              </Badge>
+      {hasValidConversion && metricWeight && (
+        <tr className="fs-2">
+          <td>
+            <Stack direction="horizontal">
+              {/* <i className="fa-solid fa-weight-scale"></i> */}
+              <code className="ms-auto">
+                {numberFormatter.format(metricWeight[0])}
+              </code>
             </Stack>
+          </td>
+          <td className="text-muted">{metricWeight[1]}</td>
+          <td className="fs-4" valign="middle">
+            <small className="text-muted">
+              <i className="fa-solid fa-atom"></i>{" "}
+              {densityUsed?.g_whole
+                ? `${densityUsed.g_whole} g/whole`
+                : `${densityUsed?.g_ml} g/mL`}
+            </small>
+          </td>
+        </tr>
+      )}
+      {hasValidConversion && usWeight && (
+        <tr className="fs-2">
+          <td>
+            <Stack direction="horizontal">
+              {/* <i className="fa-solid fa-flag-usa"></i> */}
+              <code className="ms-auto">
+                {numberFormatter.format(usWeight[0])}
+              </code>
+            </Stack>
+          </td>
+          <td className="text-muted" colSpan={2}>
+            {usWeight[1]}
           </td>
         </tr>
       )}
