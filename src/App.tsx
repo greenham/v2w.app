@@ -90,20 +90,22 @@ const formatWeightResult = (value: number, label: string) => {
 
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  // const chocolateChipCookiesRecipe = [
-  //   { amount: 1, unit: "c", ingredient: "butter" },
-  //   { amount: 1, unit: "c", ingredient: "sugar" },
-  //   { amount: 1, unit: "c", ingredient: "sugar, brown" },
-  //   { amount: 2, unit: "whole", ingredient: "egg" },
-  //   { amount: 2, unit: "t", ingredient: "vanilla extract" },
-  //   { amount: 1, unit: "t", ingredient: "baking soda" },
-  //   { amount: 2, unit: "t", ingredient: "water" },
-  //   { amount: 0.5, unit: "t", ingredient: "salt, table" },
-  //   { amount: 3, unit: "c", ingredient: "flour" },
-  //   { amount: 2, unit: "c", ingredient: "chocolate chips" },
-  //   { amount: 1, unit: "c", ingredient: "walnuts, chopped" },
-  // ].reverse();
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
+  const chocolateChipCookiesRecipe = [
+    { amount: "1", unit: "c", ingredient: "butter" },
+    { amount: "1", unit: "c", ingredient: "sugar" },
+    { amount: "1", unit: "c", ingredient: "sugar, brown" },
+    { amount: "2", unit: "whole", ingredient: "egg" },
+    { amount: "2", unit: "t", ingredient: "vanilla extract" },
+    { amount: "1", unit: "t", ingredient: "baking soda" },
+    { amount: "2", unit: "t", ingredient: "water" },
+    { amount: "1/2", unit: "t", ingredient: "salt, table" },
+    { amount: "3", unit: "c", ingredient: "flour" },
+    { amount: "2", unit: "c", ingredient: "chocolate chips" },
+    { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
+  ].reverse();
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
+    chocolateChipCookiesRecipe
+  );
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
@@ -127,9 +129,9 @@ function App() {
             <th style={{ width: "10%" }}>Amount</th>
             <th style={{ width: "15%" }}>Unit</th>
             <th>Ingredient</th>
-            <th style={{ width: "12%" }}>Grams</th>
+            {/* <th style={{ width: "12%" }}>Grams</th>
             <th style={{ width: "12%" }}>Pounds</th>
-            <th style={{ width: "12%" }}>Ounces</th>
+            <th style={{ width: "12%" }}>Ounces</th> */}
           </tr>
         </thead>
         <tbody>
@@ -137,12 +139,7 @@ function App() {
         </tbody>
         <tbody className="table-group-divider">
           {recipeLines.reverse().map((line, idx) => (
-            <RecipeLine
-              line={line}
-              key={idx}
-              isNew={false}
-              isBeingEdited={false}
-            />
+            <RecipeLine line={line} key={idx} isNew={false} />
           ))}
         </tbody>
       </Table>
@@ -153,19 +150,17 @@ function App() {
 type TRecipeLineProps = {
   line?: TRecipeLine;
   isNew?: boolean;
-  isBeingEdited?: boolean;
   onLineConverted?: (line: TRecipeLine) => void;
 };
 function RecipeLine(props: TRecipeLineProps) {
-  const { line, isNew, onLineConverted } = props;
-  const [isBeingEdited, setIsBeingEdited] = React.useState(
-    props.isBeingEdited || false
-  );
   const defaults = {
     amount: "",
     unit: "t",
     ingredient: "",
   };
+
+  const { line, isNew, onLineConverted } = props;
+  const [isBeingEdited, setIsBeingEdited] = React.useState(false);
   const [amount, setAmount] = React.useState(defaults.amount);
   const [unit, setUnit] = React.useState(defaults.unit);
   const [ingredient, setIngredient] = React.useState(defaults.ingredient);
@@ -200,17 +195,29 @@ function RecipeLine(props: TRecipeLineProps) {
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
-      let amountNum = Number(amount);
+      // parse fractions into decimal for calculation
+      let amountNum = amount.includes("/")
+        ? amount
+            .split("/")
+            .map(Number)
+            .reduce((p, c) => p / c)
+        : Number(amount);
+
+      // convert to grams
       let grams;
       if (unit === "oz" || unit === "lb") {
         // straight conversion, no density needed
         grams = amountNum * (unit === "oz" ? gramsPerOunce : gramsPerPound);
       } else {
+        // find density for ingredient
         const density = densities.find((d) => d.name === ingredient);
         if (density) {
+          // do the conversion (units are ignored for "whole" ingredients)
           grams = density.g_whole
             ? amountNum * density.g_whole
             : amountNum * density.g_ml * unitToGramsMap.get(unit)!;
+
+          setUnit(density.g_whole ? "whole" : unit);
         } else {
           // no matching ingredient found, do nothing
           setHasValidConversion(false);
@@ -248,7 +255,7 @@ function RecipeLine(props: TRecipeLineProps) {
             size="lg"
           />
         ) : (
-          amount
+          <>{amount}</>
         )}
       </td>
       <td className="fs-2">
@@ -265,6 +272,9 @@ function RecipeLine(props: TRecipeLineProps) {
                 ))}
               </optgroup>
             ))}
+            <option value="whole" disabled>
+              whole
+            </option>
           </Form.Select>
         ) : (
           <small>{unitLabels.get(unit) || unit}</small>
@@ -320,19 +330,32 @@ function RecipeLine(props: TRecipeLineProps) {
             )}
           </InputGroup>
         ) : (
-          <Stack direction="horizontal">
-            {ingredient}
-            <Button
-              onClick={() => setIsBeingEdited(true)}
-              className="ms-auto"
-              variant="secondary"
-            >
-              <i className="fa-regular fa-pen-to-square"></i>
-            </Button>{" "}
+          <Stack>
+            <Stack direction="horizontal">
+              {ingredient}
+              <Button
+                onClick={() => setIsBeingEdited(true)}
+                className="ms-auto"
+                variant="secondary"
+              >
+                <i className="fa-regular fa-pen-to-square"></i>
+              </Button>{" "}
+            </Stack>
+            <Stack direction="horizontal" gap={1}>
+              <Badge pill bg="primary">
+                {grams}
+              </Badge>
+              <Badge pill bg="secondary">
+                {pounds}
+              </Badge>
+              <Badge pill bg="secondary">
+                {ounces}
+              </Badge>
+            </Stack>
           </Stack>
         )}
       </td>
-      <td className="fs-2">
+      {/* <td className="fs-2">
         <Badge pill bg="primary">
           {grams}
         </Badge>
@@ -346,7 +369,7 @@ function RecipeLine(props: TRecipeLineProps) {
         <Badge pill bg="secondary">
           {ounces}
         </Badge>
-      </td>
+      </td> */}
     </tr>
   );
 }
