@@ -347,11 +347,12 @@ function RecipeLine(props: TRecipeLineProps) {
         </td>
       </tr>
       {hasValidConversion && (
-        <tr className="fs-2">
-          <td className="text-end">
+        <tr>
+          <td className="text-end" valign="middle">
+            <i className="fa-solid fa-weight-scale px-2"></i>
             <i className="fa-solid fa-equals"></i>
           </td>
-          <td colSpan={2}>
+          <td colSpan={2} className="fs-2">
             <Stack direction="horizontal" gap={1}>
               <Badge pill bg="primary">
                 {grams}
