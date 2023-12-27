@@ -1,6 +1,6 @@
 import React from "react";
-import { Container, Form, Image } from "react-bootstrap";
-import logoImageUrl from "./assets/logo-128.png";
+import { Container, Form, Image, Table } from "react-bootstrap";
+// import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
 const ingredients = densities.map((d) => d.name);
 type TRecipeLine = {
@@ -25,16 +25,29 @@ const gramsPerPound = 453;
 const gramsPerOunce = 28;
 
 function App() {
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
+  // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([
+    { amount: 1, unit: "c", ingredient: "butter" },
+    { amount: 1, unit: "c", ingredient: "sugar" },
+    { amount: 1, unit: "c", ingredient: "sugar, brown" },
+    { amount: 2, unit: "whole", ingredient: "egg" },
+    { amount: 2, unit: "t", ingredient: "vanilla extract" },
+    { amount: 1, unit: "t", ingredient: "baking soda" },
+    { amount: 2, unit: "t", ingredient: "water" },
+    { amount: 0.5, unit: "t", ingredient: "salt, table" },
+    { amount: 3, unit: "c", ingredient: "flour" },
+    { amount: 2, unit: "c", ingredient: "chocolate chips" },
+    { amount: 1, unit: "c", ingredient: "walnuts, chopped" },
+  ]);
   return (
     <Container>
-      <Image src={logoImageUrl} />
+      {/* <Image src={logoImageUrl} /> */}
       <datalist id="ingredients">
-        {ingredients.map((i) => (
-          <option value={i} />
+        {ingredients.map((i, idx) => (
+          <option value={i} key={idx} />
         ))}
       </datalist>
-      <table className="table table-striped">
+      <Table striped variant="dark">
         <thead>
           <tr>
             <th>Amount</th>
@@ -47,11 +60,11 @@ function App() {
         </thead>
         <tbody>
           <RecipeLine />
-          {recipeLines.map((line) => (
-            <RecipeLine line={line} />
+          {recipeLines.map((line, idx) => (
+            <RecipeLine line={line} key={idx} />
           ))}
         </tbody>
-      </table>
+      </Table>
     </Container>
   );
 }
@@ -62,28 +75,43 @@ type TRecipeLineProps = {
 function RecipeLine(props: TRecipeLineProps) {
   const { line } = props;
   const [amount, setAmount] = React.useState(line?.amount || undefined);
-  const [unit, setUnit] = React.useState(line?.unit || "");
+  const [unit, setUnit] = React.useState(line?.unit || "t");
   const [ingredient, setIngredient] = React.useState(line?.ingredient || "");
-  const [grams, setGrams] = React.useState(0);
-  const [pounds, setPounds] = React.useState(0);
-  const [ounces, setOunces] = React.useState(0);
+  const [grams, setGrams] = React.useState("");
+  const [pounds, setPounds] = React.useState("");
+  const [ounces, setOunces] = React.useState("");
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
-      const density = densities.find((d) => d.name === ingredient);
-      if (density) {
-        const grams = density.g_whole
-          ? amount * density.g_whole
-          : amount * density.g_ml * unitToGramsMap.get(unit)!;
-        const pounds = grams / gramsPerPound;
-        const ounces = grams / gramsPerOunce;
-        setAmount(amount);
-        setUnit(unit);
-        setIngredient(ingredient);
-        setGrams(grams);
-        setPounds(pounds);
-        setOunces(ounces);
+      let grams;
+      if (unit === "oz" || unit === "lb") {
+        // straight conversion, no density needed
+        grams = amount * (unit === "oz" ? gramsPerOunce : gramsPerPound);
+      } else {
+        const density = densities.find((d) => d.name === ingredient);
+        if (density) {
+          grams = density.g_whole
+            ? amount * density.g_whole
+            : amount * density.g_ml * unitToGramsMap.get(unit)!;
+        } else {
+          // no density found, assume 1 g/ml
+          grams = amount * unitToGramsMap.get(unit)!;
+        }
       }
+      if (grams >= 1000) {
+        setGrams((grams / 1000).toFixed(2) + " kg");
+      } else {
+        setGrams(grams.toFixed(2) + " g");
+      }
+
+      const pounds = grams / gramsPerPound;
+      const ounces = grams / gramsPerOunce;
+      setPounds(pounds.toFixed(2) + " lb");
+      setOunces(ounces.toFixed(2) + " oz");
+    } else {
+      setGrams("");
+      setPounds("");
+      setOunces("");
     }
   }, [amount, unit, ingredient]);
 
@@ -95,18 +123,17 @@ function RecipeLine(props: TRecipeLineProps) {
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
+          size="lg"
         />
       </td>
       <td>
-        <Form.Control
-          as="select"
+        <Form.Select
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
+          size="lg"
         >
           <optgroup label="US Volume">
-            <option value="t" selected>
-              teaspoons
-            </option>
+            <option value="t">teaspoons</option>
             <option value="T">tablespoons</option>
             <option value="floz">fluid ounces</option>
             <option value="c">cups</option>
@@ -123,7 +150,10 @@ function RecipeLine(props: TRecipeLineProps) {
             <option value="oz">ounces</option>
             <option value="lb">pounds</option>
           </optgroup>
-        </Form.Control>
+          <option value="whole" disabled>
+            whole
+          </option>
+        </Form.Select>
       </td>
       <td>
         <Form.Control
@@ -131,11 +161,14 @@ function RecipeLine(props: TRecipeLineProps) {
           list="ingredients"
           value={ingredient}
           onChange={(e) => setIngredient(e.target.value)}
+          onBlur={(e) => setIngredient(e.target.value)}
+          placeholder="Start typing an ingredient..."
+          size="lg"
         />
       </td>
-      <td>{grams}</td>
-      <td>{pounds}</td>
-      <td>{ounces}</td>
+      <td className="fs-2">{grams}</td>
+      <td className="fs-2">{pounds}</td>
+      <td className="fs-2">{ounces}</td>
     </tr>
   );
 }
