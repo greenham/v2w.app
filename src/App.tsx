@@ -186,7 +186,7 @@ function RecipeLine(props: TRecipeLineProps) {
   };
 
   React.useEffect(() => {
-    if (line && !isNew) {
+    if (line) {
       setAmount(line.amount);
       setUnit(line?.unit || "t");
       setIngredient(line?.ingredient || "");
