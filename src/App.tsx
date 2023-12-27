@@ -50,12 +50,12 @@ function App() {
       <Table striped variant="dark">
         <thead>
           <tr>
-            <th>Amount</th>
-            <th>Unit</th>
+            <th style={{ width: "10%" }}>Amount</th>
+            <th style={{ width: "20%" }}>Unit</th>
             <th>Ingredient</th>
-            <th>Grams</th>
-            <th>Pounds</th>
-            <th>Ounces</th>
+            <th style={{ width: "12%" }}>Grams</th>
+            <th style={{ width: "12%" }}>Pounds</th>
+            <th style={{ width: "12%" }}>Ounces</th>
           </tr>
         </thead>
         <tbody>
@@ -166,9 +166,9 @@ function RecipeLine(props: TRecipeLineProps) {
           size="lg"
         />
       </td>
-      <td className="fs-2">{grams}</td>
-      <td className="fs-2">{pounds}</td>
-      <td className="fs-2">{ounces}</td>
+      <td className="fs-2 text-primary">{grams}</td>
+      <td className="fs-3 text-secondary">{pounds}</td>
+      <td className="fs-3 text-secondary">{ounces}</td>
     </tr>
   );
 }
