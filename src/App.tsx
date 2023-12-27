@@ -273,6 +273,19 @@ function RecipeLine(props: TRecipeLineProps) {
       <td className="fs-2">
         {isNew || isBeingEdited ? (
           <InputGroup>
+            {isNew ? (
+              <Button
+                variant="dark"
+                disabled={ingredient.length === 0}
+                onClick={() => resetNewLine()}
+              >
+                <i className="fa-regular fa-circle-xmark"></i>
+              </Button>
+            ) : (
+              <Button variant="danger">
+                <i className="fa-solid fa-trash-can"></i>
+              </Button>
+            )}
             <Form.Control
               type="text"
               list="ingredients"
@@ -281,42 +294,29 @@ function RecipeLine(props: TRecipeLineProps) {
               onKeyUp={(e) => {
                 if (e.key === "Enter" && hasValidConversion) {
                   handleLineAdd();
+                } else if (e.key === "Escape") {
+                  setIngredient("");
                 }
               }}
               placeholder="Start typing an ingredient..."
               size="lg"
             />
             {isNew ? (
-              <>
-                <Button
-                  variant="success"
-                  disabled={!hasValidConversion}
-                  onClick={() => {
-                    handleLineAdd();
-                  }}
-                >
-                  <i className="fa-solid fa-plus"></i> Add
-                </Button>
-                <Button
-                  variant="dark"
-                  disabled={ingredient.length === 0}
-                  onClick={() => resetNewLine()}
-                >
-                  <i className="fa-regular fa-circle-xmark"></i> Clear
-                </Button>
-              </>
+              <Button
+                variant="success"
+                disabled={!hasValidConversion}
+                onClick={() => handleLineAdd()}
+              >
+                <i className="fa-solid fa-plus"></i> Add
+              </Button>
             ) : (
-              <>
-                <Button
-                  disabled={!hasValidConversion}
-                  onClick={() => setIsBeingEdited(false)}
-                >
-                  <i className="fa-solid fa-floppy-disk"></i>
-                </Button>
-                <Button>
-                  <i className="fa-solid fa-trash-can"></i>
-                </Button>
-              </>
+              <Button
+                variant="success"
+                disabled={!hasValidConversion}
+                onClick={() => setIsBeingEdited(false)}
+              >
+                <i className="fa-solid fa-floppy-disk"></i>
+              </Button>
             )}
           </InputGroup>
         ) : (
