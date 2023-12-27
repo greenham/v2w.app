@@ -129,9 +129,6 @@ function App() {
             <th style={{ width: "10%" }}>Amount</th>
             <th style={{ width: "15%" }}>Unit</th>
             <th>Ingredient</th>
-            {/* <th style={{ width: "12%" }}>Grams</th>
-            <th style={{ width: "12%" }}>Pounds</th>
-            <th style={{ width: "12%" }}>Ounces</th> */}
           </tr>
         </thead>
         <tbody>
@@ -244,103 +241,118 @@ function RecipeLine(props: TRecipeLineProps) {
   }, [amount, unit, ingredient]);
 
   return (
-    <tr className={isNew ? "table-active table-group-divider" : ""}>
-      <td className="fs-2 text-end">
-        {isNew || isBeingEdited ? (
-          <Form.Control
-            type="text"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            size="lg"
-          />
-        ) : (
-          <>{amount}</>
-        )}
-      </td>
-      <td className="fs-2">
-        {isNew || isBeingEdited ? (
-          <Form.Select
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            size="lg"
-          >
-            {unitGroupOptions.map((opt, idx) => (
-              <optgroup label={opt.label} key={idx}>
-                {opt.options.map((o, idx) => (
-                  <option value={o.value} key={idx}>{`${o.label}`}</option>
-                ))}
-              </optgroup>
-            ))}
-            <option value="whole" disabled>
-              whole
-            </option>
-          </Form.Select>
-        ) : (
-          <small>{unitLabels.get(unit) || unit}</small>
-        )}
-      </td>
-      <td className="fs-2">
-        {isNew || isBeingEdited ? (
-          <InputGroup>
-            {isNew ? (
-              <Button
-                variant="dark"
-                disabled={ingredient.length === 0}
-                onClick={() => resetNewLine()}
-              >
-                <i className="fa-regular fa-circle-xmark"></i>
-              </Button>
-            ) : (
-              <Button variant="danger">
-                <i className="fa-solid fa-trash-can"></i>
-              </Button>
-            )}
+    <>
+      <tr
+        className={
+          isNew ? "table-active table-group-divider" : "table-group-divider"
+        }
+      >
+        <td className="fs-2 text-end">
+          {isNew || isBeingEdited ? (
             <Form.Control
               type="text"
-              list="ingredients"
-              value={ingredient}
-              onChange={(e) => setIngredient(e.target.value)}
-              onKeyUp={(e) => {
-                if (e.key === "Enter" && hasValidConversion) {
-                  handleLineAdd();
-                } else if (e.key === "Escape") {
-                  setIngredient("");
-                }
-              }}
-              placeholder="Start typing an ingredient..."
+              inputMode="decimal"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
               size="lg"
             />
-            {isNew ? (
-              <Button
-                variant="success"
-                disabled={!hasValidConversion}
-                onClick={() => handleLineAdd()}
-              >
-                <i className="fa-solid fa-plus"></i> Add
-              </Button>
-            ) : (
-              <Button
-                variant="success"
-                disabled={!hasValidConversion}
-                onClick={() => setIsBeingEdited(false)}
-              >
-                <i className="fa-solid fa-floppy-disk"></i>
-              </Button>
-            )}
-          </InputGroup>
-        ) : (
-          <Stack>
-            <Stack direction="horizontal">
-              {ingredient}
-              <Button
-                onClick={() => setIsBeingEdited(true)}
-                className="ms-auto"
-                variant="secondary"
-              >
-                <i className="fa-regular fa-pen-to-square"></i>
-              </Button>{" "}
+          ) : (
+            <>{amount}</>
+          )}
+        </td>
+        <td className="fs-2">
+          {isNew || isBeingEdited ? (
+            <Form.Select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              size="lg"
+            >
+              {unitGroupOptions.map((opt, idx) => (
+                <optgroup label={opt.label} key={idx}>
+                  {opt.options.map((o, idx) => (
+                    <option value={o.value} key={idx}>{`${o.label}`}</option>
+                  ))}
+                </optgroup>
+              ))}
+              <option value="whole" disabled>
+                whole
+              </option>
+            </Form.Select>
+          ) : (
+            <small>{unitLabels.get(unit) || unit}</small>
+          )}
+        </td>
+        <td className="fs-2">
+          {isNew || isBeingEdited ? (
+            <InputGroup>
+              {isNew ? (
+                <Button
+                  variant="dark"
+                  disabled={ingredient.length === 0}
+                  onClick={() => resetNewLine()}
+                >
+                  <i className="fa-regular fa-circle-xmark"></i>
+                </Button>
+              ) : (
+                <Button variant="danger">
+                  <i className="fa-solid fa-trash-can"></i>
+                </Button>
+              )}
+              <Form.Control
+                type="text"
+                list="ingredients"
+                value={ingredient}
+                onChange={(e) => setIngredient(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter" && hasValidConversion) {
+                    handleLineAdd();
+                  } else if (e.key === "Escape") {
+                    setIngredient("");
+                  }
+                }}
+                placeholder="Start typing an ingredient..."
+                size="lg"
+              />
+              {isNew ? (
+                <Button
+                  variant="success"
+                  disabled={!hasValidConversion}
+                  onClick={() => handleLineAdd()}
+                >
+                  <i className="fa-solid fa-plus"></i> Add
+                </Button>
+              ) : (
+                <Button
+                  variant="success"
+                  disabled={!hasValidConversion}
+                  onClick={() => setIsBeingEdited(false)}
+                >
+                  <i className="fa-solid fa-floppy-disk"></i>
+                </Button>
+              )}
+            </InputGroup>
+          ) : (
+            <Stack>
+              <Stack direction="horizontal">
+                {ingredient}
+                <Button
+                  onClick={() => setIsBeingEdited(true)}
+                  className="ms-auto"
+                  variant="secondary"
+                >
+                  <i className="fa-regular fa-pen-to-square"></i>
+                </Button>{" "}
+              </Stack>
             </Stack>
+          )}
+        </td>
+      </tr>
+      {hasValidConversion && (
+        <tr className="fs-2">
+          <td className="text-end">
+            <i className="fa-solid fa-equals"></i>
+          </td>
+          <td colSpan={2}>
             <Stack direction="horizontal" gap={1}>
               <Badge pill bg="primary">
                 {grams}
@@ -352,25 +364,10 @@ function RecipeLine(props: TRecipeLineProps) {
                 {ounces}
               </Badge>
             </Stack>
-          </Stack>
-        )}
-      </td>
-      {/* <td className="fs-2">
-        <Badge pill bg="primary">
-          {grams}
-        </Badge>
-      </td>
-      <td className="fs-4" valign="middle">
-        <Badge pill bg="secondary">
-          {pounds}
-        </Badge>
-      </td>
-      <td className="fs-4" valign="middle">
-        <Badge pill bg="secondary">
-          {ounces}
-        </Badge>
-      </td> */}
-    </tr>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 
