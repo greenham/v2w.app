@@ -90,22 +90,20 @@ const formatWeightResult = (value: number, label: string) => {
 
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  const chocolateChipCookiesRecipe = [
-    { amount: "1", unit: "c", ingredient: "butter" },
-    { amount: "1", unit: "c", ingredient: "sugar" },
-    { amount: "1", unit: "c", ingredient: "sugar, brown" },
-    { amount: "2", unit: "whole", ingredient: "egg" },
-    { amount: "2", unit: "t", ingredient: "vanilla extract" },
-    { amount: "1", unit: "t", ingredient: "baking soda" },
-    { amount: "2", unit: "t", ingredient: "water" },
-    { amount: "1/2", unit: "t", ingredient: "salt, table" },
-    { amount: "3", unit: "c", ingredient: "flour" },
-    { amount: "2", unit: "c", ingredient: "chocolate chips" },
-    { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
-  ].reverse();
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
-    chocolateChipCookiesRecipe
-  );
+  // const chocolateChipCookiesRecipe = [
+  //   { amount: "1", unit: "c", ingredient: "butter" },
+  //   { amount: "1", unit: "c", ingredient: "sugar" },
+  //   { amount: "1", unit: "c", ingredient: "sugar, brown" },
+  //   { amount: "2", unit: "whole", ingredient: "egg" },
+  //   { amount: "2", unit: "t", ingredient: "vanilla extract" },
+  //   { amount: "1", unit: "t", ingredient: "baking soda" },
+  //   { amount: "2", unit: "t", ingredient: "water" },
+  //   { amount: "1/2", unit: "t", ingredient: "salt, table" },
+  //   { amount: "3", unit: "c", ingredient: "flour" },
+  //   { amount: "2", unit: "c", ingredient: "chocolate chips" },
+  //   { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
+  // ].reverse();
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
@@ -126,8 +124,8 @@ function App() {
       <Table striped responsive>
         <thead>
           <tr className="fs-2">
-            <th style={{ width: "10%" }}>Amount</th>
-            <th style={{ width: "15%" }}>Unit</th>
+            <th style={{ width: "20%" }}>Amount</th>
+            <th style={{ width: "20%" }}>Unit</th>
             <th>Ingredient</th>
           </tr>
         </thead>
@@ -255,9 +253,10 @@ function RecipeLine(props: TRecipeLineProps) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               size="lg"
+              placeholder="1, 0.5, 1/2, etc."
             />
           ) : (
-            <>{amount}</>
+            amount
           )}
         </td>
         <td className="fs-2">
@@ -357,9 +356,11 @@ function RecipeLine(props: TRecipeLineProps) {
               <Badge pill bg="primary">
                 {grams}
               </Badge>
+              <small>or</small>
               <Badge pill bg="secondary">
                 {pounds}
               </Badge>
+              <small>or</small>
               <Badge pill bg="secondary">
                 {ounces}
               </Badge>
