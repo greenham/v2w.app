@@ -13,7 +13,7 @@ import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
 const ingredients = densities.map((d) => d.name);
 type TRecipeLine = {
-  amount?: number;
+  amount?: string;
   unit?: string;
   ingredient?: string;
 };
@@ -33,9 +33,11 @@ const unitToGramsMap = new Map<string, number>([
   ["pt", 473],
   ["qt", 946],
   ["gal", 3785],
+  ["lb", 453],
+  ["oz", 28],
 ]);
-const gramsPerPound = 453;
-const gramsPerOunce = 28;
+const gramsPerPound = unitToGramsMap.get("lb")!;
+const gramsPerOunce = unitToGramsMap.get("oz")!;
 
 const usVolumeOptions = [
   { value: "t", label: "teaspoons" },
@@ -159,18 +161,23 @@ function RecipeLine(props: TRecipeLineProps) {
   const [isBeingEdited, setIsBeingEdited] = React.useState(
     props.isBeingEdited || false
   );
-  const [amount, setAmount] = React.useState(line?.amount || undefined);
-  const [unit, setUnit] = React.useState(line?.unit || "t");
-  const [ingredient, setIngredient] = React.useState(line?.ingredient || "");
+  const defaults = {
+    amount: "",
+    unit: "t",
+    ingredient: "",
+  };
+  const [amount, setAmount] = React.useState(defaults.amount);
+  const [unit, setUnit] = React.useState(defaults.unit);
+  const [ingredient, setIngredient] = React.useState(defaults.ingredient);
   const [grams, setGrams] = React.useState(<></>);
   const [pounds, setPounds] = React.useState(<></>);
   const [ounces, setOunces] = React.useState(<></>);
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
 
   const resetNewLine = () => {
-    setAmount(undefined);
-    setUnit("t");
-    setIngredient("");
+    setAmount(defaults.amount);
+    setUnit(defaults.unit);
+    setIngredient(defaults.ingredient);
   };
 
   const handleLineAdd = () => {
@@ -186,25 +193,24 @@ function RecipeLine(props: TRecipeLineProps) {
   };
 
   React.useEffect(() => {
-    if (line) {
-      setAmount(line.amount);
-      setUnit(line?.unit || "t");
-      setIngredient(line?.ingredient || "");
-    }
+    setAmount(line?.amount || "");
+    setUnit(line?.unit || "t");
+    setIngredient(line?.ingredient || "");
   }, [line]);
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
+      let amountNum = Number(amount);
       let grams;
       if (unit === "oz" || unit === "lb") {
         // straight conversion, no density needed
-        grams = amount * (unit === "oz" ? gramsPerOunce : gramsPerPound);
+        grams = amountNum * (unit === "oz" ? gramsPerOunce : gramsPerPound);
       } else {
         const density = densities.find((d) => d.name === ingredient);
         if (density) {
           grams = density.g_whole
-            ? amount * density.g_whole
-            : amount * density.g_ml * unitToGramsMap.get(unit)!;
+            ? amountNum * density.g_whole
+            : amountNum * density.g_ml * unitToGramsMap.get(unit)!;
         } else {
           // no matching ingredient found, do nothing
           setHasValidConversion(false);
@@ -232,14 +238,13 @@ function RecipeLine(props: TRecipeLineProps) {
 
   return (
     <tr className={isNew ? "table-active table-group-divider" : ""}>
-      {/*  onClick={() => setIsBeingEdited(true)} */}
       <td className="fs-2 text-end">
         {isNew || isBeingEdited ? (
           <Form.Control
-            type="number"
+            type="text"
             inputMode="decimal"
-            value={Number(amount)}
-            onChange={(e) => setAmount(Math.abs(Number(e.target.value)))}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             size="lg"
           />
         ) : (
@@ -302,7 +307,10 @@ function RecipeLine(props: TRecipeLineProps) {
               </>
             ) : (
               <>
-                <Button onClick={() => setIsBeingEdited(false)}>
+                <Button
+                  disabled={!hasValidConversion}
+                  onClick={() => setIsBeingEdited(false)}
+                >
                   <i className="fa-solid fa-floppy-disk"></i>
                 </Button>
                 <Button>
@@ -312,7 +320,16 @@ function RecipeLine(props: TRecipeLineProps) {
             )}
           </InputGroup>
         ) : (
-          ingredient
+          <Stack direction="horizontal">
+            {ingredient}
+            <Button
+              onClick={() => setIsBeingEdited(true)}
+              className="ms-auto"
+              variant="secondary"
+            >
+              <i className="fa-regular fa-pen-to-square"></i>
+            </Button>{" "}
+          </Stack>
         )}
       </td>
       <td className="fs-2">
