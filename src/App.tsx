@@ -68,6 +68,15 @@ const unitLabels = new Map<string, string>([
   ...weightUnitOptions.map((o) => [o.value, o.label] as const),
 ]);
 
+const formatWeightResult = (value: number, label: string) => {
+  return (
+    <code>
+      {numberFormatter.format(value)}
+      <small className="text-muted">{label}</small>
+    </code>
+  );
+};
+
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
   const chocolateChipCookiesRecipe = [
@@ -158,35 +167,15 @@ function RecipeLine(props: TRecipeLineProps) {
         }
       }
       if (grams >= 1000) {
-        setGrams(
-          <code>
-            {numberFormatter.format(grams / 1000)}
-            <small className="text-muted">kg</small>
-          </code>
-        );
+        setGrams(formatWeightResult(grams / 1000, "kg"));
       } else {
-        setGrams(
-          <code>
-            {numberFormatter.format(grams)}
-            <small className="text-muted">g</small>
-          </code>
-        );
+        setGrams(formatWeightResult(grams, "g"));
       }
 
       const pounds = grams / gramsPerPound;
       const ounces = grams / gramsPerOunce;
-      setPounds(
-        <code>
-          {numberFormatter.format(pounds)}
-          <small className="text-muted">lb</small>
-        </code>
-      );
-      setOunces(
-        <code>
-          {numberFormatter.format(ounces)}
-          <small className="text-muted">oz</small>
-        </code>
-      );
+      setPounds(formatWeightResult(pounds, "lb"));
+      setOunces(formatWeightResult(ounces, "oz"));
     } else {
       setGrams(<></>);
       setPounds(<></>);
