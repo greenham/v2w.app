@@ -368,6 +368,7 @@ function RecipeLine(props: TRecipeLineProps) {
           <td>
             <Stack direction="horizontal">
               {/* <i className="fa-solid fa-weight-scale"></i> */}
+              <i className="fa-solid fa-equals"></i>
               <code className="ms-auto">
                 {numberFormatter.format(metricWeight[0])}
               </code>
@@ -389,6 +390,7 @@ function RecipeLine(props: TRecipeLineProps) {
           <td>
             <Stack direction="horizontal">
               {/* <i className="fa-solid fa-flag-usa"></i> */}
+              <i className="fa-solid fa-equals"></i>
               <code className="ms-auto">
                 {numberFormatter.format(usWeight[0])}
               </code>
