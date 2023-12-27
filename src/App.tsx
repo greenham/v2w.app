@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Form, Image, Table } from "react-bootstrap";
+import { Badge, Container, Form, Image, Stack, Table } from "react-bootstrap";
 import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
 const ingredients = densities.map((d) => d.name);
@@ -24,6 +24,46 @@ const unitToGramsMap = new Map<string, number>([
 const gramsPerPound = 453;
 const gramsPerOunce = 28;
 
+const usVolumeOptions = [
+  { value: "t", label: "teaspoons" },
+  { value: "T", label: "tablespoons" },
+  { value: "floz", label: "fluid ounces" },
+  { value: "c", label: "cups" },
+  { value: "pt", label: "pints" },
+  { value: "qt", label: "quarts" },
+  { value: "gal", label: "gallons" },
+];
+const metricVolumeOptions = [
+  { value: "ml", label: "milliliters" },
+  { value: "dl", label: "deciliters" },
+  { value: "l", label: "liters" },
+];
+const weightUnitOptions = [
+  { value: "oz", label: "ounces" },
+  { value: "lb", label: "pounds" },
+];
+
+const unitGroupOptions = [
+  {
+    label: "US Volume",
+    options: usVolumeOptions,
+  },
+  {
+    label: "Metric Volume",
+    options: metricVolumeOptions,
+  },
+  {
+    label: "Weights",
+    options: weightUnitOptions,
+  },
+];
+
+const unitLabels = new Map<string, string>([
+  ...usVolumeOptions.map((o) => [o.value, o.label] as const),
+  ...metricVolumeOptions.map((o) => [o.value, o.label] as const),
+  ...weightUnitOptions.map((o) => [o.value, o.label] as const),
+]);
+
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
   const chocolateChipCookiesRecipe = [
@@ -41,9 +81,9 @@ function App() {
   ];
   const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
     chocolateChipCookiesRecipe
-  ); // []
-  const addRecipeLine = (line: TRecipeLine) => {
-    setRecipeLines([line, ...recipeLines]);
+  );
+  const addRecipeLine = (newLine: TRecipeLine) => {
+    setRecipeLines([...recipeLines, newLine]);
   };
   return (
     <Container>
@@ -52,9 +92,9 @@ function App() {
           <option value={i} key={idx} />
         ))}
       </datalist>
-      <Table striped size="sm">
+      <Table striped>
         <thead>
-          <tr>
+          <tr className="fs-2">
             <th style={{ width: "10%" }}>Amount</th>
             <th style={{ width: "20%" }}>Unit</th>
             <th>Ingredient</th>
@@ -64,13 +104,19 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          <RecipeLine isActive={true} onLineAdded={addRecipeLine} />
+          <RecipeLine isActive={true} onLineConverted={addRecipeLine} />
           {recipeLines.map((line, idx) => (
             <RecipeLine line={line} key={idx} isActive={false} />
           ))}
         </tbody>
       </Table>
-      <Image src={logoImageUrl} />
+      <Stack direction="horizontal" gap={3}>
+        <Image src={logoImageUrl} width={64} height={64} />
+        <Stack>
+          <h1 className="mb-0">volum.io</h1>
+          <span>a free volume to weight converter for the kitchen</span>
+        </Stack>
+      </Stack>
     </Container>
   );
 }
@@ -78,17 +124,17 @@ function App() {
 type TRecipeLineProps = {
   line?: TRecipeLine;
   isActive?: boolean;
-  onLineAdded?: (line: TRecipeLine) => void;
+  onLineConverted?: (line: TRecipeLine) => void;
 };
 function RecipeLine(props: TRecipeLineProps) {
-  const { line, isActive } = props;
+  const [line, setLine] = React.useState(props.line || undefined);
+  const [isActive, setIsActive] = React.useState(props.isActive || false);
   const [amount, setAmount] = React.useState(line?.amount || undefined);
   const [unit, setUnit] = React.useState(line?.unit || "t");
   const [ingredient, setIngredient] = React.useState(line?.ingredient || "");
   const [grams, setGrams] = React.useState(<></>);
-  const [pounds, setPounds] = React.useState("");
-  const [ounces, setOunces] = React.useState("");
-  const [lineIsActive, setLineIsActive] = React.useState(isActive);
+  const [pounds, setPounds] = React.useState(<></>);
+  const [ounces, setOunces] = React.useState(<></>);
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
@@ -108,91 +154,80 @@ function RecipeLine(props: TRecipeLineProps) {
         }
       }
       if (grams >= 1000) {
-        setGrams(
-          <>
-            {(grams / 1000).toFixed(2)}
-            <small>kg</small>
-          </>
-        );
+        setGrams(<span>{(grams / 1000).toFixed(2)} kg</span>);
       } else {
-        setGrams(
-          <>
-            {grams.toFixed(2)}
-            <small>g</small>
-          </>
-        );
+        setGrams(<span>{grams.toFixed(2)} g</span>);
       }
 
       const pounds = grams / gramsPerPound;
       const ounces = grams / gramsPerOunce;
-      setPounds(pounds.toFixed(2) + " lb");
-      setOunces(ounces.toFixed(2) + " oz");
-
-      if (lineIsActive && props.onLineAdded) {
-        props.onLineAdded({ amount, unit, ingredient });
-        setLineIsActive(false);
-      }
+      setPounds(<span>{pounds.toFixed(2)} lb</span>);
+      setOunces(<span>{ounces.toFixed(2)} oz</span>);
     } else {
       setGrams(<></>);
-      setPounds("");
-      setOunces("");
+      setPounds(<></>);
+      setOunces(<></>);
     }
   }, [amount, unit, ingredient]);
 
   return (
     <tr className={isActive ? "table-active table-group-divider" : ""}>
-      <td>
-        <Form.Control
-          type="number"
-          inputMode="decimal"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-          size="lg"
-        />
+      <td className="fs-2 text-end">
+        {isActive ? (
+          <Form.Control
+            type="number"
+            inputMode="decimal"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            size="lg"
+          />
+        ) : (
+          amount
+        )}
       </td>
-      <td>
-        <Form.Select
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          size="lg"
-        >
-          <optgroup label="US Volume">
-            <option value="t">teaspoons</option>
-            <option value="T">tablespoons</option>
-            <option value="floz">fluid ounces</option>
-            <option value="c">cups</option>
-            <option value="pt">pints</option>
-            <option value="qt">quarts</option>
-            <option value="gal">gallons</option>
-          </optgroup>
-          <optgroup label="Metric Volume">
-            <option value="ml">milliliters</option>
-            <option value="dl">deciliters</option>
-            <option value="l">liters</option>
-          </optgroup>
-          <optgroup label="Weights">
-            <option value="oz">ounces</option>
-            <option value="lb">pounds</option>
-          </optgroup>
-          <option value="whole" disabled>
-            whole
-          </option>
-        </Form.Select>
+      <td className="fs-2">
+        {isActive ? (
+          <Form.Select
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            size="lg"
+          >
+            {unitGroupOptions.map((opt, idx) => (
+              <optgroup label={opt.label} key={idx}>
+                {opt.options.map((o, idx) => (
+                  <option value={o.value} key={idx}>{`${o.label}`}</option>
+                ))}
+              </optgroup>
+            ))}
+          </Form.Select>
+        ) : (
+          <small>{unitLabels.get(unit) || unit}</small>
+        )}
       </td>
-      <td>
-        <Form.Control
-          type="text"
-          list="ingredients"
-          value={ingredient}
-          onChange={(e) => setIngredient(e.target.value)}
-          onBlur={(e) => setIngredient(e.target.value)}
-          placeholder="Start typing an ingredient..."
-          size="lg"
-        />
+      <td className="fs-2">
+        {isActive ? (
+          <Form.Control
+            type="text"
+            list="ingredients"
+            value={ingredient}
+            onChange={(e) => setIngredient(e.target.value)}
+            onBlur={(e) => setIngredient(e.target.value)}
+            placeholder="Start typing an ingredient..."
+            size="lg"
+          />
+        ) : (
+          ingredient
+        )}
       </td>
-      <td className="fs-2 text-success">{grams}</td>
-      <td className="fs-3 text-muted">{pounds}</td>
-      <td className="fs-3 text-muted">{ounces}</td>
+      <td className="fs-2">
+        <Badge bg="success">{grams}</Badge>
+      </td>
+      <td className="fs-4">
+        <Badge bg="secondary">{pounds}</Badge>
+      </td>
+      <td className="fs-4">
+        <Badge bg="secondary">{ounces}</Badge>
+      </td>
     </tr>
   );
 }
