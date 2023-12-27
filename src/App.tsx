@@ -154,15 +154,35 @@ function RecipeLine(props: TRecipeLineProps) {
         }
       }
       if (grams >= 1000) {
-        setGrams(<span>{(grams / 1000).toFixed(2)} kg</span>);
+        setGrams(
+          <code>
+            {(grams / 1000).toFixed(2)}
+            <small className="text-muted">kg</small>
+          </code>
+        );
       } else {
-        setGrams(<span>{grams.toFixed(2)} g</span>);
+        setGrams(
+          <code>
+            {grams.toFixed(2)}
+            <small className="text-muted">g</small>
+          </code>
+        );
       }
 
       const pounds = grams / gramsPerPound;
       const ounces = grams / gramsPerOunce;
-      setPounds(<span>{pounds.toFixed(2)} lb</span>);
-      setOunces(<span>{ounces.toFixed(2)} oz</span>);
+      setPounds(
+        <code>
+          {pounds.toFixed(2)}
+          <small className="text-muted">lb</small>
+        </code>
+      );
+      setOunces(
+        <code>
+          {ounces.toFixed(2)}
+          <small className="text-muted">oz</small>
+        </code>
+      );
     } else {
       setGrams(<></>);
       setPounds(<></>);
@@ -220,13 +240,19 @@ function RecipeLine(props: TRecipeLineProps) {
         )}
       </td>
       <td className="fs-2">
-        <Badge bg="success">{grams}</Badge>
+        <Badge pill bg="primary">
+          {grams}
+        </Badge>
       </td>
-      <td className="fs-4">
-        <Badge bg="secondary">{pounds}</Badge>
+      <td className="fs-4" valign="middle">
+        <Badge pill bg="secondary">
+          {pounds}
+        </Badge>
       </td>
-      <td className="fs-4">
-        <Badge bg="secondary">{ounces}</Badge>
+      <td className="fs-4" valign="middle">
+        <Badge pill bg="secondary">
+          {ounces}
+        </Badge>
       </td>
     </tr>
   );
