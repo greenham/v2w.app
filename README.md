@@ -2,7 +2,7 @@
 
 ## Overview
 
-_volumio_ is a volume-to-weight converter for the kitchen.
+_volum.io_ is a volume-to-weight converter for the kitchen.
 
 It uses [known densities](http://blog.khymos.org/wp-content/2014/01/volume-weight-conversion-v2.xlsm) of specific ingredients to calculate the weight of a given volume of that ingredient.
 
