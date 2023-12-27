@@ -274,7 +274,7 @@ function RecipeLine(props: TRecipeLineProps) {
               value={ingredient}
               onChange={(e) => setIngredient(e.target.value)}
               onKeyUp={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && hasValidConversion) {
                   handleLineAdd();
                 }
               }}
