@@ -267,6 +267,7 @@ function RecipeLine(props: TRecipeLineProps) {
               onChange={(e) => setAmount(e.target.value)}
               size="lg"
               placeholder="1, 0.5, 1/2, etc."
+              className="text-end"
             />
           ) : (
             amount
@@ -291,7 +292,7 @@ function RecipeLine(props: TRecipeLineProps) {
               </option>
             </Form.Select>
           ) : (
-            <small>{unitLabels.get(unit) || unit}</small>
+            <small className="text-muted">{unitLabels.get(unit) || unit}</small>
           )}
         </td>
         <td className="fs-2">
