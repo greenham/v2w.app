@@ -18,7 +18,7 @@ type TRecipeLine = {
   ingredient?: string;
 };
 const numberFormatter = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 2,
+  minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
 
@@ -79,31 +79,36 @@ const unitLabels = new Map<string, string>([
   ...weightUnitOptions.map((o) => [o.value, o.label] as const),
 ]);
 
+const formatWeightResults = (results: Array<[number, string]>) => {
+  return <code>{results.map((r) => formatWeightResult(r[0], r[1]))}</code>;
+};
 const formatWeightResult = (value: number, label: string) => {
   return (
-    <code>
+    <span>
       {numberFormatter.format(value)}
-      <small className="text-muted">{label}</small>
-    </code>
+      <small className="text-muted">{label}</small>&nbsp;
+    </span>
   );
 };
 
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  // const chocolateChipCookiesRecipe = [
-  //   { amount: "1", unit: "c", ingredient: "butter" },
-  //   { amount: "1", unit: "c", ingredient: "sugar" },
-  //   { amount: "1", unit: "c", ingredient: "sugar, brown" },
-  //   { amount: "2", unit: "whole", ingredient: "egg" },
-  //   { amount: "2", unit: "t", ingredient: "vanilla extract" },
-  //   { amount: "1", unit: "t", ingredient: "baking soda" },
-  //   { amount: "2", unit: "t", ingredient: "water" },
-  //   { amount: "1/2", unit: "t", ingredient: "salt, table" },
-  //   { amount: "3", unit: "c", ingredient: "flour" },
-  //   { amount: "2", unit: "c", ingredient: "chocolate chips" },
-  //   { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
-  // ].reverse();
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
+  const chocolateChipCookiesRecipe = [
+    { amount: "1", unit: "c", ingredient: "butter" },
+    { amount: "1", unit: "c", ingredient: "sugar" },
+    { amount: "1", unit: "c", ingredient: "sugar, brown" },
+    { amount: "2", unit: "whole", ingredient: "egg" },
+    { amount: "2", unit: "t", ingredient: "vanilla extract" },
+    { amount: "1", unit: "t", ingredient: "baking soda" },
+    { amount: "2", unit: "t", ingredient: "water" },
+    { amount: "1/2", unit: "t", ingredient: "salt, table" },
+    { amount: "3", unit: "c", ingredient: "flour" },
+    { amount: "2", unit: "c", ingredient: "chocolate chips" },
+    { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
+  ].reverse();
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
+    chocolateChipCookiesRecipe
+  );
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
@@ -159,9 +164,8 @@ function RecipeLine(props: TRecipeLineProps) {
   const [amount, setAmount] = React.useState(defaults.amount);
   const [unit, setUnit] = React.useState(defaults.unit);
   const [ingredient, setIngredient] = React.useState(defaults.ingredient);
-  const [grams, setGrams] = React.useState(<></>);
-  const [pounds, setPounds] = React.useState(<></>);
-  const [ounces, setOunces] = React.useState(<></>);
+  const [metricWeight, setMetricWeight] = React.useState(<></>);
+  const [usWeight, setUsWeight] = React.useState(<></>);
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
 
   const resetNewLine = () => {
@@ -220,20 +224,34 @@ function RecipeLine(props: TRecipeLineProps) {
         }
       }
       if (grams >= 1000) {
-        setGrams(formatWeightResult(grams / 1000, "kg"));
+        setMetricWeight(formatWeightResults([[grams / 1000, "kg"]]));
       } else {
-        setGrams(formatWeightResult(grams, "g"));
+        setMetricWeight(formatWeightResults([[grams, "g"]]));
       }
 
-      const pounds = grams / gramsPerPound;
+      // ☐ Change lb/oz display
+      // ☐ If it's over 16oz, display as lb/oz i.e. 1lb 4oz
+      // ☐ Otherwise, display as oz
+      // really we want these values to just be metric weight and US weight
       const ounces = grams / gramsPerOunce;
-      setPounds(formatWeightResult(pounds, "lb"));
-      setOunces(formatWeightResult(ounces, "oz"));
+      if (ounces >= 16) {
+        const pounds = Math.floor(ounces / 16);
+        const remainder = ounces % 16;
+        // This is interesting because the current formatWeightResult function isn't set up to handle this case
+        setUsWeight(
+          formatWeightResults([
+            [pounds, "lb"],
+            [remainder, "oz"],
+          ])
+        );
+      } else {
+        setUsWeight(formatWeightResults([[ounces, "oz"]]));
+      }
+
       setHasValidConversion(true);
     } else {
-      setGrams(<></>);
-      setPounds(<></>);
-      setOunces(<></>);
+      setMetricWeight(<></>);
+      setUsWeight(<></>);
       setHasValidConversion(false);
     }
   }, [amount, unit, ingredient]);
@@ -355,15 +373,11 @@ function RecipeLine(props: TRecipeLineProps) {
           <td colSpan={2} className="fs-2">
             <Stack direction="horizontal" gap={1}>
               <Badge pill bg="primary">
-                {grams}
+                {metricWeight}
               </Badge>
               <small>or</small>
               <Badge pill bg="secondary">
-                {pounds}
-              </Badge>
-              <small>or</small>
-              <Badge pill bg="secondary">
-                {ounces}
+                {usWeight}
               </Badge>
             </Stack>
           </td>
