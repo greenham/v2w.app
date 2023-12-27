@@ -1,5 +1,14 @@
 import React from "react";
-import { Badge, Container, Form, Image, Stack, Table } from "react-bootstrap";
+import {
+  Badge,
+  Button,
+  Container,
+  Form,
+  Image,
+  InputGroup,
+  Stack,
+  Table,
+} from "react-bootstrap";
 import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
 const ingredients = densities.map((d) => d.name);
@@ -79,24 +88,22 @@ const formatWeightResult = (value: number, label: string) => {
 
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  const chocolateChipCookiesRecipe = [
-    { amount: 1, unit: "c", ingredient: "butter" },
-    { amount: 1, unit: "c", ingredient: "sugar" },
-    { amount: 1, unit: "c", ingredient: "sugar, brown" },
-    { amount: 2, unit: "whole", ingredient: "egg" },
-    { amount: 2, unit: "t", ingredient: "vanilla extract" },
-    { amount: 1, unit: "t", ingredient: "baking soda" },
-    { amount: 2, unit: "t", ingredient: "water" },
-    { amount: 0.5, unit: "t", ingredient: "salt, table" },
-    { amount: 3, unit: "c", ingredient: "flour" },
-    { amount: 2, unit: "c", ingredient: "chocolate chips" },
-    { amount: 1, unit: "c", ingredient: "walnuts, chopped" },
-  ];
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
-    chocolateChipCookiesRecipe
-  );
+  // const chocolateChipCookiesRecipe = [
+  //   { amount: 1, unit: "c", ingredient: "butter" },
+  //   { amount: 1, unit: "c", ingredient: "sugar" },
+  //   { amount: 1, unit: "c", ingredient: "sugar, brown" },
+  //   { amount: 2, unit: "whole", ingredient: "egg" },
+  //   { amount: 2, unit: "t", ingredient: "vanilla extract" },
+  //   { amount: 1, unit: "t", ingredient: "baking soda" },
+  //   { amount: 2, unit: "t", ingredient: "water" },
+  //   { amount: 0.5, unit: "t", ingredient: "salt, table" },
+  //   { amount: 3, unit: "c", ingredient: "flour" },
+  //   { amount: 2, unit: "c", ingredient: "chocolate chips" },
+  //   { amount: 1, unit: "c", ingredient: "walnuts, chopped" },
+  // ];
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
   const addRecipeLine = (newLine: TRecipeLine) => {
-    setRecipeLines([...recipeLines, newLine]);
+    setRecipeLines([newLine, ...recipeLines]);
   };
   return (
     <Container className="mt-3 mb-5">
@@ -124,9 +131,16 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          <RecipeLine isActive={true} onLineConverted={addRecipeLine} />
-          {recipeLines.map((line, idx) => (
-            <RecipeLine line={line} key={idx} isActive={false} />
+          <RecipeLine isNew={true} onLineConverted={addRecipeLine} />
+        </tbody>
+        <tbody className="table-group-divider">
+          {recipeLines.reverse().map((line, idx) => (
+            <RecipeLine
+              line={line}
+              key={idx}
+              isNew={false}
+              isBeingEdited={false}
+            />
           ))}
         </tbody>
       </Table>
@@ -136,18 +150,48 @@ function App() {
 
 type TRecipeLineProps = {
   line?: TRecipeLine;
-  isActive?: boolean;
+  isNew?: boolean;
+  isBeingEdited?: boolean;
   onLineConverted?: (line: TRecipeLine) => void;
 };
 function RecipeLine(props: TRecipeLineProps) {
-  const [line, setLine] = React.useState(props.line || undefined);
-  const [isActive, setIsActive] = React.useState(props.isActive || false);
+  const { line, isNew, onLineConverted } = props;
+  const [isBeingEdited, setIsBeingEdited] = React.useState(
+    props.isBeingEdited || false
+  );
   const [amount, setAmount] = React.useState(line?.amount || undefined);
   const [unit, setUnit] = React.useState(line?.unit || "t");
   const [ingredient, setIngredient] = React.useState(line?.ingredient || "");
   const [grams, setGrams] = React.useState(<></>);
   const [pounds, setPounds] = React.useState(<></>);
   const [ounces, setOunces] = React.useState(<></>);
+  const [hasValidConversion, setHasValidConversion] = React.useState(false);
+
+  const resetNewLine = () => {
+    setAmount(undefined);
+    setUnit("t");
+    setIngredient("");
+  };
+
+  const handleLineAdd = () => {
+    if (onLineConverted) {
+      onLineConverted({ amount, unit, ingredient });
+    }
+    resetNewLine();
+    // focus on the amount input
+    const input = document.querySelector("input[type=number]");
+    if (input) {
+      (input as HTMLInputElement).focus();
+    }
+  };
+
+  React.useEffect(() => {
+    if (line && !isNew) {
+      setAmount(line.amount);
+      setUnit(line?.unit || "t");
+      setIngredient(line?.ingredient || "");
+    }
+  }, [line]);
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
@@ -163,6 +207,7 @@ function RecipeLine(props: TRecipeLineProps) {
             : amount * density.g_ml * unitToGramsMap.get(unit)!;
         } else {
           // no matching ingredient found, do nothing
+          setHasValidConversion(false);
           return;
         }
       }
@@ -176,21 +221,24 @@ function RecipeLine(props: TRecipeLineProps) {
       const ounces = grams / gramsPerOunce;
       setPounds(formatWeightResult(pounds, "lb"));
       setOunces(formatWeightResult(ounces, "oz"));
+      setHasValidConversion(true);
     } else {
       setGrams(<></>);
       setPounds(<></>);
       setOunces(<></>);
+      setHasValidConversion(false);
     }
   }, [amount, unit, ingredient]);
 
   return (
-    <tr className={isActive ? "table-active table-group-divider" : ""}>
+    <tr className={isNew ? "table-active table-group-divider" : ""}>
+      {/*  onClick={() => setIsBeingEdited(true)} */}
       <td className="fs-2 text-end">
-        {isActive ? (
+        {isNew || isBeingEdited ? (
           <Form.Control
             type="number"
             inputMode="decimal"
-            value={amount}
+            value={Number(amount)}
             onChange={(e) => setAmount(Math.abs(Number(e.target.value)))}
             size="lg"
           />
@@ -199,7 +247,7 @@ function RecipeLine(props: TRecipeLineProps) {
         )}
       </td>
       <td className="fs-2">
-        {isActive ? (
+        {isNew || isBeingEdited ? (
           <Form.Select
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
@@ -218,16 +266,51 @@ function RecipeLine(props: TRecipeLineProps) {
         )}
       </td>
       <td className="fs-2">
-        {isActive ? (
-          <Form.Control
-            type="text"
-            list="ingredients"
-            value={ingredient}
-            onChange={(e) => setIngredient(e.target.value)}
-            onBlur={(e) => setIngredient(e.target.value)}
-            placeholder="Start typing an ingredient..."
-            size="lg"
-          />
+        {isNew || isBeingEdited ? (
+          <InputGroup>
+            <Form.Control
+              type="text"
+              list="ingredients"
+              value={ingredient}
+              onChange={(e) => setIngredient(e.target.value)}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  handleLineAdd();
+                }
+              }}
+              placeholder="Start typing an ingredient..."
+              size="lg"
+            />
+            {isNew ? (
+              <>
+                <Button
+                  variant="success"
+                  disabled={!hasValidConversion}
+                  onClick={() => {
+                    handleLineAdd();
+                  }}
+                >
+                  <i className="fa-solid fa-plus"></i> Add
+                </Button>
+                <Button
+                  variant="dark"
+                  disabled={ingredient.length === 0}
+                  onClick={() => resetNewLine()}
+                >
+                  <i className="fa-regular fa-circle-xmark"></i> Clear
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => setIsBeingEdited(false)}>
+                  <i className="fa-solid fa-floppy-disk"></i>
+                </Button>
+                <Button>
+                  <i className="fa-solid fa-trash-can"></i>
+                </Button>
+              </>
+            )}
+          </InputGroup>
         ) : (
           ingredient
         )}
