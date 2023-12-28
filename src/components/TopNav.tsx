@@ -3,6 +3,7 @@ import { Button, Image, Modal, Nav, Stack } from "react-bootstrap";
 import logoImageUrl from "../assets/logo-128.png";
 import { WhyWeigh } from "./WhyWeigh";
 import { About } from "./About";
+import { HowToUse } from "./HowToUse";
 
 export function TopNav() {
   const [modalShow, setModalShow] = React.useState(false);
@@ -11,15 +12,9 @@ export function TopNav() {
     <></>
   );
 
-  const showWhyWeighModal = () => {
-    setModalTitle("Why Weigh?");
-    setModalBody(<WhyWeigh />);
-    setModalShow(true);
-  };
-
-  const showAboutModal = () => {
-    setModalTitle("About volum.io");
-    setModalBody(<About />);
+  const showContentModal = (title: string, body: React.ReactNode | string) => {
+    setModalTitle(title);
+    setModalBody(body);
     setModalShow(true);
   };
 
@@ -33,13 +28,27 @@ export function TopNav() {
         </Stack>
         <Nav variant="pills">
           <Nav.Item>
-            <Nav.Link eventKey="why-weigh" onClick={() => showWhyWeighModal()}>
-              Why Weigh?
+            <Nav.Link
+              eventKey="how-to-use"
+              onClick={() => showContentModal("How to Use", <HowToUse />)}
+            >
+              <i className="fa-solid fa-person-chalkboard"></i> How to use this
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey="about" onClick={() => showAboutModal()}>
-              About
+            <Nav.Link
+              eventKey="why-weigh"
+              onClick={() => showContentModal("Why Weigh?", <WhyWeigh />)}
+            >
+              <i className="fa-solid fa-weight-scale"></i> Why Weigh?
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="about"
+              onClick={() => showContentModal("About volum.io", <About />)}
+            >
+              <i className="fa-solid fa-circle-info"></i> About
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -82,21 +91,10 @@ function BasicContentModal(props: BasicContentModalProps) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {title ?? "Modal heading"}
+          {title ?? ""}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {body ?? (
-          <>
-            <h4>Centered Modal</h4>
-            <p>
-              Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-              dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-              ac consectetur ac, vestibulum at eros.
-            </p>
-          </>
-        )}
-      </Modal.Body>
+      <Modal.Body>{body ?? <></>}</Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>

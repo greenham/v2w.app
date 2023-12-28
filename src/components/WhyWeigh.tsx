@@ -1,6 +1,6 @@
 export function WhyWeigh() {
   return (
-    <div className="fs-3">
+    <div className="fs-4">
       <p>
         1. <strong>Accuracy.</strong>
         <br />

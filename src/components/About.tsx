@@ -1,6 +1,6 @@
 export function About() {
   return (
-    <div className="fs-3">
+    <div className="fs-4">
       <p>
         <strong>volum.io</strong> is a free volume to weight converter for the
         kitchen.
@@ -22,8 +22,16 @@ export function About() {
         static conversion.
       </p>
       <p>
-        It was originally built in April of 2014 with jQuery 😱 and upgraded to
-        a React app 🥱 in December of 2023. The source code{" "}
+        It was{" "}
+        <a
+          href="https://github.com/greenham/volume2weight"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          originally built
+        </a>{" "}
+        in April of 2014 with jQuery 😱 and upgraded to a React app 🥱 in
+        December of 2023. The source code{" "}
         <a
           href="https://github.com/greenham/volum.io"
           target="_blank"
