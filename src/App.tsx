@@ -323,7 +323,11 @@ function RecipeLine(props: TRecipeLineProps) {
                   <i className="fa-regular fa-circle-xmark"></i>
                 </Button>
               ) : (
-                <Button variant="danger" onClick={() => handleLineRemove()}>
+                <Button
+                  variant="danger"
+                  onClick={() => handleLineRemove()}
+                  size="sm"
+                >
                   <i className="fa-solid fa-trash-can"></i>
                 </Button>
               )}
@@ -338,7 +342,11 @@ function RecipeLine(props: TRecipeLineProps) {
                 ref={ingredientRef}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && hasValidConversion) {
-                    handleLineAdd();
+                    if (isNew) {
+                      handleLineAdd();
+                    } else {
+                      setIsBeingEdited(false);
+                    }
                   } else if (e.key === "Escape") {
                     ingredientRef.current?.clear();
                   }
@@ -351,30 +359,29 @@ function RecipeLine(props: TRecipeLineProps) {
                   disabled={!hasValidConversion}
                   onClick={() => handleLineAdd()}
                 >
-                  <i className="fa-solid fa-plus"></i> Add
+                  <i className="fa-solid fa-plus"></i> Add to Recipe
                 </Button>
               ) : (
                 <Button
                   variant="success"
                   disabled={!hasValidConversion}
                   onClick={() => setIsBeingEdited(false)}
+                  size="sm"
                 >
-                  <i className="fa-solid fa-floppy-disk"></i>
+                  <i className="fa-solid fa-floppy-disk"></i> Save Changes
                 </Button>
               )}
             </InputGroup>
           ) : (
-            <Stack>
-              <Stack direction="horizontal">
-                <Badge bg="info">{ingredient}</Badge>
-                <Button
-                  onClick={() => setIsBeingEdited(true)}
-                  className="ms-auto"
-                  variant="secondary"
-                >
-                  <i className="fa-regular fa-pen-to-square"></i>
-                </Button>{" "}
-              </Stack>
+            <Stack direction="horizontal">
+              <Badge bg="info">{ingredient}</Badge>
+              <Button
+                onClick={() => setIsBeingEdited(true)}
+                className="ms-auto"
+                variant="secondary"
+              >
+                <i className="fa-regular fa-pen-to-square"></i> Edit Line
+              </Button>
             </Stack>
           )}
         </td>
