@@ -114,10 +114,10 @@ function App() {
           <span>a free volume to weight converter for the kitchen</span>
         </Stack>
       </Stack>
-      <Table responsive>
+      <Table>
         <thead>
           <tr className="fs-2">
-            <th style={{ width: "20%" }}>Amount</th>
+            <th style={{ width: "15%" }}>Amount</th>
             <th style={{ width: "20%" }}>Unit</th>
             <th>Ingredient</th>
           </tr>
@@ -184,7 +184,7 @@ function RecipeLine(props: TRecipeLineProps) {
     }
     resetNewLine();
     // focus on the amount input
-    const input = document.querySelector("input[type=number]");
+    const input = document.querySelector("#amountInput");
     if (input) {
       (input as HTMLInputElement).focus();
     }
@@ -273,6 +273,7 @@ function RecipeLine(props: TRecipeLineProps) {
         <td className="fs-3 text-end" valign="middle">
           {isNew || isBeingEdited ? (
             <Form.Control
+              id="amountInput"
               type="text"
               inputMode="decimal"
               value={amount}
@@ -342,6 +343,7 @@ function RecipeLine(props: TRecipeLineProps) {
                     ingredientRef.current?.clear();
                   }
                 }}
+                highlightOnlyResult={true}
               />
               {isNew ? (
                 <Button
