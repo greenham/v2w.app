@@ -11,6 +11,8 @@ import {
 } from "react-bootstrap";
 import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
+import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
+
 const ingredients = densities.map((d) => d.name);
 type TRecipeLine = {
   amount?: string;
@@ -83,22 +85,20 @@ const unitLabels = new Map<string, string>([
 
 function App() {
   // https://www.allrecipes.com/recipe/10813/best-chocolate-chip-cookies/
-  const chocolateChipCookiesRecipe = [
-    { amount: "1", unit: "c", ingredient: "butter" },
-    { amount: "1", unit: "c", ingredient: "sugar" },
-    { amount: "1", unit: "c", ingredient: "sugar, brown" },
-    { amount: "2", unit: "whole", ingredient: "egg" },
-    { amount: "2", unit: "t", ingredient: "vanilla extract" },
-    { amount: "1", unit: "t", ingredient: "baking soda" },
-    { amount: "2", unit: "t", ingredient: "water" },
-    { amount: "1/2", unit: "t", ingredient: "salt, table" },
-    { amount: "3", unit: "c", ingredient: "flour" },
-    { amount: "2", unit: "c", ingredient: "chocolate chips" },
-    { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
-  ].reverse();
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
-    chocolateChipCookiesRecipe
-  );
+  // const chocolateChipCookiesRecipe = [
+  //   { amount: "1", unit: "c", ingredient: "butter" },
+  //   { amount: "1", unit: "c", ingredient: "sugar" },
+  //   { amount: "1", unit: "c", ingredient: "sugar, brown" },
+  //   { amount: "2", unit: "whole", ingredient: "egg" },
+  //   { amount: "2", unit: "t", ingredient: "vanilla extract" },
+  //   { amount: "1", unit: "t", ingredient: "baking soda" },
+  //   { amount: "2", unit: "t", ingredient: "water" },
+  //   { amount: "1/2", unit: "t", ingredient: "salt, table" },
+  //   { amount: "3", unit: "c", ingredient: "flour" },
+  //   { amount: "2", unit: "c", ingredient: "chocolate chips" },
+  //   { amount: "1", unit: "c", ingredient: "walnuts, chopped" },
+  // ].reverse();
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
@@ -111,11 +111,6 @@ function App() {
           <span>a free volume to weight converter for the kitchen</span>
         </Stack>
       </Stack>
-      <datalist id="ingredients">
-        {ingredients.map((i, idx) => (
-          <option value={i} key={idx} />
-        ))}
-      </datalist>
       <Table responsive>
         <thead>
           <tr className="fs-2">
@@ -163,11 +158,13 @@ function RecipeLine(props: TRecipeLineProps) {
   const [usWeight, setUsWeight] = React.useState<[number, string]>();
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
   const [densityUsed, setDensityUsed] = React.useState<TIngredientDensity>();
+  const ingredientRef = React.useRef<TypeaheadRef>(null);
 
   const resetNewLine = () => {
     setAmount(defaults.amount);
     setUnit(defaults.unit);
     setIngredient(defaults.ingredient);
+    ingredientRef.current?.clear();
   };
 
   const handleLineAdd = () => {
@@ -183,9 +180,9 @@ function RecipeLine(props: TRecipeLineProps) {
   };
 
   React.useEffect(() => {
-    setAmount(line?.amount || "");
-    setUnit(line?.unit || "t");
-    setIngredient(line?.ingredient || "");
+    setAmount(line?.amount || defaults.amount);
+    setUnit(line?.unit || defaults.unit);
+    setIngredient(line?.ingredient || defaults.ingredient);
   }, [line]);
 
   React.useEffect(() => {
@@ -235,10 +232,7 @@ function RecipeLine(props: TRecipeLineProps) {
 
       const ounces = grams / gramsPerOunce;
       if (ounces >= 16) {
-        // const pounds = Math.floor(ounces / 16);
-        const pounds = ounces / 16;
-        // const remainder = ounces % 16;
-        setUsWeight([pounds, "pounds"]);
+        setUsWeight([ounces / 16, "pounds"]);
       } else {
         setUsWeight([ounces, "ounces"]);
       }
@@ -266,12 +260,12 @@ function RecipeLine(props: TRecipeLineProps) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               size="lg"
-              placeholder="1, 0.5, 1/2, etc."
+              placeholder="3, 0.5, 1/4, etc."
               className="text-end"
             />
           ) : (
             <Stack direction="horizontal">
-              {/* <i className="fa-solid fa-flask"></i> */}
+              <i className="fa-solid fa-flask"></i>
               <span className="ms-auto">{amount}</span>
             </Stack>
           )}
@@ -314,20 +308,22 @@ function RecipeLine(props: TRecipeLineProps) {
                   <i className="fa-solid fa-trash-can"></i>
                 </Button>
               )}
-              <Form.Control
-                type="text"
-                list="ingredients"
-                value={ingredient}
-                onChange={(e) => setIngredient(e.target.value)}
-                onKeyUp={(e) => {
+              <Typeahead
+                id="ingredients"
+                options={ingredients}
+                onChange={(s) => setIngredient(s.toString())}
+                defaultSelected={[ingredient]}
+                placeholder="Start typing an ingredient..."
+                size="lg"
+                className="form-control"
+                ref={ingredientRef}
+                onKeyDown={(e) => {
                   if (e.key === "Enter" && hasValidConversion) {
                     handleLineAdd();
                   } else if (e.key === "Escape") {
-                    setIngredient("");
+                    ingredientRef.current?.clear();
                   }
                 }}
-                placeholder="Start typing an ingredient..."
-                size="lg"
               />
               {isNew ? (
                 <Button
@@ -367,7 +363,6 @@ function RecipeLine(props: TRecipeLineProps) {
         <tr className="fs-2">
           <td>
             <Stack direction="horizontal">
-              {/* <i className="fa-solid fa-weight-scale"></i> */}
               <i className="fa-solid fa-equals"></i>
               <code className="ms-auto">
                 {numberFormatter.format(metricWeight[0])}
@@ -389,7 +384,6 @@ function RecipeLine(props: TRecipeLineProps) {
         <tr className="fs-2">
           <td>
             <Stack direction="horizontal">
-              {/* <i className="fa-solid fa-flag-usa"></i> */}
               <i className="fa-solid fa-equals"></i>
               <code className="ms-auto">
                 {numberFormatter.format(usWeight[0])}
