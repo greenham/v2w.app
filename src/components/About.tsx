@@ -7,7 +7,11 @@ export function About() {
       </p>
       <p>
         It uses{" "}
-        <a href="http://blog.khymos.org/wp-content/2014/01/volume-weight-conversion-v2.xlsm">
+        <a
+          href="http://blog.khymos.org/wp-content/2014/01/volume-weight-conversion-v2.xlsm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           known densities
         </a>{" "}
         of specific ingredients to calculate the weight of a given volume of
@@ -16,6 +20,18 @@ export function About() {
       <p>
         Other sites/apps don't take this data into account and simply give you a
         static conversion.
+      </p>
+      <p>
+        It was originally built in April of 2014 with jQuery 😱 and upgraded to
+        a React app 🥱 in December of 2023. The source code{" "}
+        <a
+          href="https://github.com/greenham/volum.io"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          can be found here on GitHub
+        </a>
+        .
       </p>
     </div>
   );
