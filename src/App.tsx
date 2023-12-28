@@ -12,13 +12,9 @@ import {
 import logoImageUrl from "./assets/logo-128.png";
 import densities from "./densities.json";
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
+import { TRecipeLine, TRecipeLineProps, TIngredientDensity } from "./types";
 
 const ingredients = densities.map((d) => d.name);
-type TRecipeLine = {
-  amount?: string;
-  unit?: string;
-  ingredient?: string;
-};
 const numberFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
@@ -141,18 +137,6 @@ function App() {
   );
 }
 
-type TRecipeLineProps = {
-  id?: number;
-  line?: TRecipeLine;
-  isNew?: boolean;
-  onLineConverted?: (line: TRecipeLine) => void;
-  onLineRemoved?: (id: number) => void;
-};
-type TIngredientDensity = {
-  name: string;
-  g_whole: number | null;
-  g_ml: number;
-};
 function RecipeLine(props: TRecipeLineProps) {
   const defaults = {
     amount: "",
