@@ -102,6 +102,9 @@ function App() {
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
+  const removeRecipeLine = (id: number) => {
+    setRecipeLines(recipeLines.filter((_, idx) => idx !== id));
+  };
   return (
     <Container className="mt-3 mb-5">
       <Stack direction="horizontal" gap={3} className="mb-3">
@@ -124,7 +127,13 @@ function App() {
         </tbody>
         <tbody className="table-group-divider">
           {recipeLines.reverse().map((line, idx) => (
-            <RecipeLine line={line} key={idx} isNew={false} />
+            <RecipeLine
+              id={idx}
+              line={line}
+              key={idx}
+              isNew={false}
+              onLineRemoved={removeRecipeLine}
+            />
           ))}
         </tbody>
       </Table>
@@ -133,9 +142,11 @@ function App() {
 }
 
 type TRecipeLineProps = {
+  id?: number;
   line?: TRecipeLine;
   isNew?: boolean;
   onLineConverted?: (line: TRecipeLine) => void;
+  onLineRemoved?: (id: number) => void;
 };
 type TIngredientDensity = {
   name: string;
@@ -149,7 +160,7 @@ function RecipeLine(props: TRecipeLineProps) {
     ingredient: "",
   };
 
-  const { line, isNew, onLineConverted } = props;
+  const { id, line, isNew, onLineConverted, onLineRemoved } = props;
   const [isBeingEdited, setIsBeingEdited] = React.useState(false);
   const [amount, setAmount] = React.useState(defaults.amount);
   const [unit, setUnit] = React.useState(defaults.unit);
@@ -176,6 +187,13 @@ function RecipeLine(props: TRecipeLineProps) {
     const input = document.querySelector("input[type=number]");
     if (input) {
       (input as HTMLInputElement).focus();
+    }
+  };
+
+  const handleLineRemove = () => {
+    if (id !== undefined && onLineRemoved) {
+      onLineRemoved(id);
+      setIsBeingEdited(false);
     }
   };
 
@@ -304,7 +322,7 @@ function RecipeLine(props: TRecipeLineProps) {
                   <i className="fa-regular fa-circle-xmark"></i>
                 </Button>
               ) : (
-                <Button variant="danger" disabled>
+                <Button variant="danger" onClick={() => handleLineRemove()}>
                   <i className="fa-solid fa-trash-can"></i>
                 </Button>
               )}
