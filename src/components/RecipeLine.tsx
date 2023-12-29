@@ -2,7 +2,6 @@ import React from "react";
 import { Badge, Button, Form, InputGroup, Stack } from "react-bootstrap";
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
 import { TRecipeLineProps, TIngredientDensity } from "../types";
-import densities from "../densities.json";
 import {
   gramsPerOunce,
   gramsPerPound,
@@ -11,7 +10,8 @@ import {
   unitLabels,
   numberFormatter,
 } from "../constants";
-import { ingredients } from "../App";
+import densities from "../densities.json";
+const ingredients = densities.map((d) => d.name);
 
 export function RecipeLine(props: TRecipeLineProps) {
   const defaults = {

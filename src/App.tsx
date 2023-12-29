@@ -1,8 +1,6 @@
 import { Container } from "react-bootstrap";
 import { TopNav } from "./components/TopNav";
 import { RecipeTable } from "./components/RecipeTable";
-import densities from "./densities.json";
-export const ingredients = densities.map((d) => d.name);
 
 function App() {
   return (
