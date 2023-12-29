@@ -21,11 +21,11 @@ From [ChefSteps.com](https://www.chefsteps.com/activities/what-you-ll-need-scale
 
 ## Allowed Units
 
-- US volume units: t, T, floz, c, pt, qt, gal
-- US weight units: oz, lb
-- Metric volume units: ml, dl, l
-- Metric weight units: g, kg
-- For items like eggs, egg whites, egg yolks and sticks of butter the unit field is ignored.
+- US volume units: `t`, `T`, `floz`, `c`, `pt`, `qt`, `gal`
+- US weight units: `oz`, `lb`
+- Metric volume units: `ml`, `dl`, `l`
+- Metric weight units: `g`, `kg`
+- For items like eggs, egg whites, egg yolks and sticks of butter, the unit field is ignored.
 
 ## Supported Ingredients
 
