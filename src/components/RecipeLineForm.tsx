@@ -232,14 +232,14 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                     <i className="fa-solid fa-weight-scale px-2"></i>
                     Metric Weight
                   </h3>
-                  <h1>
+                  <h2>
                     <Badge pill>
                       <code>{numberFormatter.format(metricWeight[0])}</code>{" "}
                       <small className="text-body-secondary">
                         {metricWeight[1]}
                       </small>
                     </Badge>
-                  </h1>
+                  </h2>
                 </div>
               </Col>
             )}
@@ -250,14 +250,14 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                     <i className="fa-solid fa-flag-usa px-2"></i>
                     US Weight
                   </h3>
-                  <h1>
+                  <h2>
                     <Badge pill>
                       <code>{numberFormatter.format(usWeight[0])}</code>{" "}
                       <small className="text-body-secondary">
                         {usWeight[1]}
                       </small>
                     </Badge>
-                  </h1>
+                  </h2>
                 </div>
               </Col>
             )}
@@ -267,7 +267,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                   <i className="fa-solid fa-flask px-2"></i>
                   Density
                 </h3>
-                <h1>
+                <h2>
                   <Badge pill>
                     <code>
                       {densityUsed?.g_whole
@@ -278,7 +278,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                       {densityUsed?.g_whole ? "g/whole" : "g/mL"}
                     </small>
                   </Badge>
-                </h1>
+                </h2>
               </div>
             </Col>
           </Row>
