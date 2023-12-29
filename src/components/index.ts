@@ -1,8 +1,8 @@
-export { About } from "./About";
-export { HowToUse } from "./HowToUse";
-export { RecipeLine } from "./RecipeLine";
+export { TopNav } from "./TopNav";
 export { RecipeLineForm } from "./RecipeLineForm";
 export { RecipeList } from "./RecipeList";
-export { RecipeTable } from "./RecipeTable";
-export { TopNav } from "./TopNav";
+export { About } from "./About";
+export { HowToUse } from "./HowToUse";
 export { WhyWeigh } from "./WhyWeigh";
+export { RecipeTable } from "./RecipeTable";
+export { RecipeTableRow } from "./RecipeTableRow";

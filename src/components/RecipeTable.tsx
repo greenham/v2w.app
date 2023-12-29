@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 import { TRecipeLine } from "../types";
-import { RecipeLine } from "./RecipeLine";
+import { RecipeTableRow } from "./RecipeTableRow";
 
 export function RecipeTable() {
   const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
@@ -21,11 +21,11 @@ export function RecipeTable() {
         </tr>
       </thead>
       <tbody>
-        <RecipeLine isNew={true} onLineConverted={addRecipeLine} />
+        <RecipeTableRow isNew={true} onLineConverted={addRecipeLine} />
       </tbody>
       <tbody className="table-group-divider">
         {recipeLines.reverse().map((line, idx) => (
-          <RecipeLine
+          <RecipeTableRow
             id={idx}
             line={line}
             key={idx}

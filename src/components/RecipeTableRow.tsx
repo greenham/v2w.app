@@ -13,7 +13,7 @@ import {
 import densities from "../densities.json";
 const ingredients = densities.map((d) => d.name);
 
-export function RecipeLine(props: TRecipeLineProps) {
+export function RecipeTableRow(props: TRecipeLineProps) {
   const defaults = {
     amount: "",
     unit: "t",
