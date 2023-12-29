@@ -53,22 +53,6 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
   };
 
   React.useEffect(() => {
-    if (ingredient) {
-      const density = densities.find((d) => d.name === ingredient);
-      if (density) {
-        setDensityUsed(density);
-        setHasValidConversion(true);
-      } else {
-        setDensityUsed(undefined);
-        setHasValidConversion(false);
-      }
-    } else {
-      setHasValidConversion(false);
-      setDensityUsed(undefined);
-    }
-  }, [ingredient]);
-
-  React.useEffect(() => {
     const newAmountIsValid = amountRegex.test(amount);
     setAmountIsValid(newAmountIsValid);
     if (!newAmountIsValid) {
