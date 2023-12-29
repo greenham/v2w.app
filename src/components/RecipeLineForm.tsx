@@ -76,6 +76,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
     <Container className="p-4 bg-body-tertiary rounded-2 border border-light-subtle shadow">
       <Form.Group className="mb-3">
         <Form.Label>
+          <i className="fa-solid fa-apple-whole px-2"></i>
           <strong>Ingredient name</strong>
         </Form.Label>
         <Typeahead
@@ -103,6 +104,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
         <Col>
           <Form.Group className="mb-3">
             <Form.Label>
+              <i className="fa-solid fa-flask px-2"></i>
               <strong>Amount of ingredient</strong>
             </Form.Label>
             <Form.Control
@@ -125,6 +127,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
         <Col>
           <Form.Group className="mb-3">
             <Form.Label>
+              <i className="fa-solid fa-ruler-vertical px-2"></i>
               <strong>Unit of measurement</strong>
             </Form.Label>
             <Form.Select
