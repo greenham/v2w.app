@@ -38,6 +38,8 @@ export function convertToWeight(
       grams = density.g_whole
         ? amountNum * density.g_whole
         : amountNum * density.g_ml * unitToGramsMap.get(unitUsed)!;
+
+      unitUsed = density.g_whole ? "whole" : unitUsed;
     } else {
       // no matching ingredient found
       return false;

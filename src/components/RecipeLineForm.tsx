@@ -81,11 +81,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
       if (conversionResult !== false) {
         setMetricWeight(conversionResult.metricWeight);
         setUsWeight(conversionResult.usWeight);
-        setUnit(
-          conversionResult.density?.g_whole
-            ? "whole"
-            : conversionResult.unitUsed
-        );
+        setUnit(conversionResult.unitUsed);
         setDensityUsed(conversionResult.density);
         setHasValidConversion(true);
       } else {
