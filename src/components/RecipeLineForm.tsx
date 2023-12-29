@@ -9,16 +9,10 @@ import {
   Row,
 } from "react-bootstrap";
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
-import {
-  gramsPerOunce,
-  gramsPerPound,
-  unitLabels,
-  unitToGramsMap,
-  unitGroupOptions,
-  numberFormatter,
-} from "../constants";
+import { unitLabels, unitGroupOptions, numberFormatter } from "../constants";
 import densities from "../densities.json";
 import { TIngredientDensity, TRecipeLineFormProps } from "../types";
+import { convertToWeight } from "../utils";
 const ingredients = densities.map((d) => d.name);
 const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 
@@ -78,66 +72,29 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
     const newAmountIsValid = amountRegex.test(amount);
     setAmountIsValid(newAmountIsValid);
     if (!newAmountIsValid) {
-      setMetricWeight(undefined);
-      setUsWeight(undefined);
       setHasValidConversion(false);
       return;
     }
 
-    if (amount && unit && ingredient) {
-      // parse fractions into decimal for calculation
-      const amountNum = amount.includes("/")
-        ? amount
-            .split("/")
-            .map(Number)
-            .reduce((p, c) => p / c)
-        : Number(amount);
-
-      // convert selected unit to grams
-      let grams;
-      if (unit === "g" || unit === "kg") {
-        grams = amountNum * (unit === "g" ? 1 : 1000);
-      } else if (unit === "oz" || unit === "lb") {
-        // straight conversion, no density needed
-        grams = amountNum * (unit === "oz" ? gramsPerOunce : gramsPerPound);
+    if (ingredient && amount && unit) {
+      const conversionResult = convertToWeight(ingredient, amount, unit);
+      if (conversionResult !== false) {
+        setMetricWeight(conversionResult.metricWeight);
+        setUsWeight(conversionResult.usWeight);
+        setUnit(
+          conversionResult.density?.g_whole
+            ? "whole"
+            : conversionResult.unitUsed
+        );
+        setDensityUsed(conversionResult.density);
+        setHasValidConversion(true);
       } else {
-        if (densityUsed) {
-          // if units are currently "whole", but g_whole is null, force to default unit
-          const unitUsed =
-            unit === "whole" && !densityUsed.g_whole ? defaults.unit : unit;
-
-          // do the conversion (units are ignored for "whole" ingredients)
-          grams = densityUsed.g_whole
-            ? amountNum * densityUsed.g_whole
-            : amountNum * densityUsed.g_ml * unitToGramsMap.get(unitUsed)!;
-
-          setUnit(densityUsed.g_whole ? "whole" : unitUsed);
-        } else {
-          // no matching ingredient found, do nothing
-          setHasValidConversion(false);
-          return;
-        }
+        setHasValidConversion(false);
       }
-      if (grams >= 1000) {
-        setMetricWeight([grams / 1000, "kilograms"]);
-      } else {
-        setMetricWeight([grams, "grams"]);
-      }
-
-      const ounces = grams / gramsPerOunce;
-      if (ounces >= 16) {
-        setUsWeight([ounces / 16, "pounds"]);
-      } else {
-        setUsWeight([ounces, "ounces"]);
-      }
-
-      setHasValidConversion(true);
     } else {
-      setMetricWeight(undefined);
-      setUsWeight(undefined);
       setHasValidConversion(false);
     }
-  }, [amount, unit, ingredient, densityUsed, defaults.unit]);
+  }, [amount, unit, ingredient]);
 
   return (
     <Container className="p-4 bg-body-tertiary rounded-2">
