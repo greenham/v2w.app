@@ -12,6 +12,7 @@ import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
 import {
   gramsPerOunce,
   gramsPerPound,
+  unitLabels,
   unitToGramsMap,
   unitGroupOptions,
   numberFormatter,
@@ -19,6 +20,7 @@ import {
 import densities from "../densities.json";
 import { TIngredientDensity } from "../types";
 const ingredients = densities.map((d) => d.name);
+const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 
 export function RecipeLineForm() {
   const defaults = {
@@ -34,6 +36,7 @@ export function RecipeLineForm() {
   const [densityUsed, setDensityUsed] = React.useState<TIngredientDensity>();
   const [metricWeight, setMetricWeight] = React.useState<[number, string]>();
   const [usWeight, setUsWeight] = React.useState<[number, string]>();
+  const [amountIsValid, setAmountIsValid] = React.useState(false);
   const ingredientRef = React.useRef<TypeaheadRef>(null);
 
   const resetNewLine = () => {
@@ -81,6 +84,15 @@ export function RecipeLineForm() {
   }, [ingredient]);
 
   React.useEffect(() => {
+    const newAmountIsValid = amountRegex.test(amount);
+    setAmountIsValid(newAmountIsValid);
+    if (!newAmountIsValid) {
+      setMetricWeight(undefined);
+      setUsWeight(undefined);
+      setHasValidConversion(false);
+      return;
+    }
+
     if (amount && unit && ingredient) {
       // parse fractions into decimal for calculation
       const amountNum = amount.includes("/")
@@ -138,10 +150,6 @@ export function RecipeLineForm() {
 
   return (
     <Container className="p-4 bg-body-tertiary rounded-2">
-      {/* <h2 className="display-5 mb-3">
-        <i className="fa-solid fa-calculator px-2"></i>
-        Conversion Calculator
-      </h2> */}
       <Form.Group className="mb-3">
         <Form.Label>
           <strong>Ingredient name</strong>
@@ -151,10 +159,12 @@ export function RecipeLineForm() {
           options={ingredients}
           onChange={(s) => setIngredient(s.toString())}
           placeholder="Start typing an ingredient..."
-          inputProps={{ className: "fs-1" }}
+          inputProps={{ className: "fs-2" }}
           size="lg"
           className="mb-3"
           ref={ingredientRef}
+          isInvalid={!ingredient}
+          isValid={!!ingredient}
           onKeyDown={(e) => {
             if (e.key === "Enter" && hasValidConversion) {
               handleLineAdd();
@@ -162,7 +172,6 @@ export function RecipeLineForm() {
               ingredientRef.current?.clear();
             }
           }}
-          highlightOnlyResult={true}
         />
       </Form.Group>
       <Row xs={1} sm={2}>
@@ -180,6 +189,8 @@ export function RecipeLineForm() {
               size="lg"
               className="fs-3 text-end"
               placeholder="3, 0.5, 1/4, etc."
+              isInvalid={!amountIsValid}
+              isValid={amountIsValid}
             />
             <Form.Text id="passwordHelpBlock" muted>
               Enter a number, decimal, or fraction.
@@ -197,6 +208,7 @@ export function RecipeLineForm() {
               onChange={(e) => setUnit(e.target.value)}
               size="lg"
               className="fs-3"
+              isValid={true}
             >
               {unitGroupOptions.map((opt, idx) => (
                 <optgroup label={opt.label} key={idx}>
@@ -214,6 +226,11 @@ export function RecipeLineForm() {
       </Row>
       {hasValidConversion && (
         <Alert variant="dark" className="px-5 py-4 text-center">
+          <h1>
+            {amount} {unitLabels.get(unit) || unit} of{" "}
+            <strong>{ingredient}</strong>
+          </h1>
+          <hr />
           <Row xs={1} sm={2} md={3} className="g-4 justify-content-center mb-4">
             {metricWeight && (
               <Col>
