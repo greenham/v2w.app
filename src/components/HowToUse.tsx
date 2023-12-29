@@ -4,12 +4,12 @@ export function HowToUse() {
   return (
     <div className="fs-4">
       <ul>
-        <li>Enter an amount of an ingredient you want to convert</li>
-        <li>Select the unit of measurement for the amount you entered</li>
         <li>
           Start typing the name of the ingredient you want to convert and select
           a match from the list
         </li>
+        <li>Enter the amount of an ingredient you want to convert</li>
+        <li>Select the unit of measurement for the amount you entered</li>
         <li>
           You will see the weight displayed in both metric (grams/kilos) and US
           (ounces/pounds).

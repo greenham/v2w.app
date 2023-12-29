@@ -47,7 +47,9 @@ export function TopNav() {
             <Nav.Item>
               <Nav.Link
                 eventKey="how-to-use"
-                onClick={() => showContentModal("How to Use", <HowToUse />)}
+                onClick={() =>
+                  showContentModal("How to use this", <HowToUse />)
+                }
               >
                 <i className="fa-solid fa-person-chalkboard"></i> How to use
                 this
