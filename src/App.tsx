@@ -2,12 +2,9 @@ import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { TopNav, RecipeLineForm, RecipeList } from "./components";
 import { TRecipeLine } from "./types";
-import { chocolateChipCookiesRecipe } from "./recipes";
 
 function App() {
-  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>(
-    chocolateChipCookiesRecipe
-  );
+  const [recipeLines, setRecipeLines] = React.useState<TRecipeLine[]>([]);
   const addRecipeLine = (newLine: TRecipeLine) => {
     setRecipeLines([newLine, ...recipeLines]);
   };
