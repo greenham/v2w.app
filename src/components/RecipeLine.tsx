@@ -61,12 +61,12 @@ export function RecipeLine(props: TRecipeLineProps) {
     setAmount(line?.amount || defaults.amount);
     setUnit(line?.unit || defaults.unit);
     setIngredient(line?.ingredient || defaults.ingredient);
-  }, [line]);
+  }, [line, defaults.amount, defaults.unit, defaults.ingredient]);
 
   React.useEffect(() => {
     if (amount && unit && ingredient) {
       // parse fractions into decimal for calculation
-      let amountNum = amount.includes("/")
+      const amountNum = amount.includes("/")
         ? amount
             .split("/")
             .map(Number)
@@ -87,7 +87,7 @@ export function RecipeLine(props: TRecipeLineProps) {
           setDensityUsed(density);
 
           // if units are currently "whole", but g_whole is null, force to default unit
-          let unitUsed =
+          const unitUsed =
             unit === "whole" && !density.g_whole ? defaults.unit : unit;
 
           // do the conversion (units are ignored for "whole" ingredients)
@@ -121,7 +121,7 @@ export function RecipeLine(props: TRecipeLineProps) {
       setUsWeight(undefined);
       setHasValidConversion(false);
     }
-  }, [amount, unit, ingredient]);
+  }, [amount, unit, ingredient, defaults.unit]);
 
   return (
     <>
