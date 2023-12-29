@@ -26,7 +26,7 @@ export function TopNav() {
         <Image src={logoImageUrl} width={64} height={64} />
         <Stack>
           <h1 className="mb-0">volum.io</h1>
-          <span>a free volume to weight converter for the kitchen</span>
+          <span>a volume to weight converter for the kitchen</span>
         </Stack>
         <Button
           variant="primary"
