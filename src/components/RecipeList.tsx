@@ -1,6 +1,7 @@
 import { Button, ListGroup, Stack } from "react-bootstrap";
 import { TRecipeListProps } from "../types";
-import { unitLabels } from "../constants";
+import { numberFormatter, unitLabels } from "../constants";
+import { convertToWeight } from "../utils";
 
 export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
   const handleLineRemove = (id: number) => {
@@ -19,24 +20,45 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
   }
 
   return (
-    <ListGroup>
-      {recipeLines.map((line, idx) => (
-        <ListGroup.Item key={idx} className="fs-5">
-          <Stack direction="horizontal">
-            <span>
-              {line.amount} {unitLabels.get(line.unit) || line.unit}{" "}
-              {line.ingredient}
-            </span>
-            <Button
-              onClick={() => handleLineRemove(idx)}
-              size="sm"
-              className="ms-auto"
-            >
-              X
-            </Button>
-          </Stack>
-        </ListGroup.Item>
-      ))}
+    <ListGroup className="h-75 overflow-auto">
+      {recipeLines.map((line, idx) => {
+        const conversionResult = convertToWeight(
+          line.ingredient,
+          line.amount,
+          line.unit
+        );
+        return (
+          <ListGroup.Item key={idx} className="fs-5">
+            <Stack direction="horizontal">
+              <Stack>
+                <span>
+                  {line.amount}{" "}
+                  <small>{unitLabels.get(line.unit) || line.unit}</small>{" "}
+                  {line.ingredient}
+                </span>
+                {conversionResult && (
+                  <span>
+                    <i className="fa-solid fa-weight-scale px-2"></i>
+                    <code>
+                      {numberFormatter.format(conversionResult.metricWeight[0])}{" "}
+                    </code>
+                    <small className="text-muted">
+                      {conversionResult.metricWeight[1]}
+                    </small>
+                  </span>
+                )}
+              </Stack>
+              <Button
+                onClick={() => handleLineRemove(idx)}
+                size="sm"
+                className="ms-auto"
+              >
+                X
+              </Button>
+            </Stack>
+          </ListGroup.Item>
+        );
+      })}
     </ListGroup>
   );
 }

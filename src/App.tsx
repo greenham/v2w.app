@@ -18,7 +18,7 @@ function App() {
   return (
     <Container className="mt-3 mb-5">
       <TopNav />
-      <Row>
+      <Row className="g-4">
         <Col sm={12} md={6} lg={8}>
           <RecipeLineForm onLineAdd={addRecipeLine} />
         </Col>

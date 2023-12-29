@@ -10,9 +10,9 @@ import {
 } from "react-bootstrap";
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
 import { unitLabels, unitGroupOptions, numberFormatter } from "../constants";
-import densities from "../densities.json";
 import { TIngredientDensity, TRecipeLineFormProps } from "../types";
 import { convertToWeight } from "../utils";
+import densities from "../densities.json";
 const ingredients = densities.map((d) => d.name);
 const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 
