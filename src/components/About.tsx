@@ -2,7 +2,7 @@ export function About() {
   return (
     <div className="fs-4">
       <p>
-        <strong>volum.io</strong> is a free volume to weight converter for the
+        <strong>v2w.app</strong> is a free volume to weight converter for the
         kitchen.
       </p>
       <p>

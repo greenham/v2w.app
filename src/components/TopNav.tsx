@@ -25,7 +25,7 @@ export function TopNav() {
       <Stack direction="horizontal" gap={3} className="mb-3">
         <Image src={logoImageUrl} width={64} height={64} />
         <Stack>
-          <h1 className="mb-0">volum.io</h1>
+          <h1 className="mb-0">v2w.app</h1>
           <span>a volume to weight converter for the kitchen</span>
         </Stack>
         <Button
@@ -66,7 +66,7 @@ export function TopNav() {
             <Nav.Item>
               <Nav.Link
                 eventKey="about"
-                onClick={() => showContentModal("About volum.io", <About />)}
+                onClick={() => showContentModal("About the app", <About />)}
               >
                 <i className="fa-solid fa-circle-info"></i> About
               </Nav.Link>

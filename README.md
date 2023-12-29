@@ -1,8 +1,8 @@
-# volum.io
+# v2w.app
 
 ## Overview
 
-_volum.io_ is a volume-to-weight converter for the kitchen.
+[v2w.app](https://v2w.app) is a volume to weight converter for the kitchen.
 
 ![Screenshot of the app](./public/screenshot.png)
 
