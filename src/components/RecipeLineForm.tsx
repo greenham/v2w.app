@@ -18,11 +18,12 @@ import {
   numberFormatter,
 } from "../constants";
 import densities from "../densities.json";
-import { TIngredientDensity } from "../types";
+import { TIngredientDensity, TRecipeLineFormProps } from "../types";
 const ingredients = densities.map((d) => d.name);
 const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 
-export function RecipeLineForm() {
+export function RecipeLineForm(props: TRecipeLineFormProps) {
+  const { onLineAdd } = props;
   const defaults = {
     amount: "",
     unit: "",
@@ -40,7 +41,7 @@ export function RecipeLineForm() {
   const ingredientRef = React.useRef<TypeaheadRef>(null);
   const selectedIngredient = undefined;
 
-  const resetNewLine = () => {
+  const resetForm = () => {
     setAmount(defaults.amount);
     setUnit(defaults.unit);
     setIngredient(defaults.ingredient);
@@ -48,21 +49,14 @@ export function RecipeLineForm() {
   };
 
   const handleLineAdd = () => {
-    // if (onLineConverted) {
-    //   onLineConverted({ amount, unit, ingredient });
-    // }
-    resetNewLine();
+    if (onLineAdd) {
+      onLineAdd({ amount, unit, ingredient });
+    }
+    resetForm();
 
     // focus on the ingredient input
     ingredientRef.current?.focus();
   };
-
-  // const handleLineRemove = () => {
-  //   if (id !== undefined && onLineRemoved) {
-  //     onLineRemoved(id);
-  //     setIsBeingEdited(false);
-  //   }
-  // };
 
   // React.useEffect(() => {
   //   ingredientRef.current?.focus();
@@ -297,7 +291,7 @@ export function RecipeLineForm() {
               variant="outline-success"
               size="lg"
               className="fw-bold"
-              disabled
+              onClick={() => handleLineAdd()}
             >
               <i className="fa-solid fa-plus px-2"></i>Add to recipe
             </Button>

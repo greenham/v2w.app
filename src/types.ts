@@ -1,7 +1,16 @@
 export type TRecipeLine = {
-  amount?: string;
-  unit?: string;
-  ingredient?: string;
+  amount: string;
+  unit: string;
+  ingredient: string;
+};
+
+export type TRecipeLineFormProps = {
+  onLineAdd?: (line: TRecipeLine) => void;
+};
+
+export type TRecipeListProps = {
+  recipeLines: TRecipeLine[];
+  onLineRemoved: (id: number) => void;
 };
 
 export type TRecipeLineProps = {
