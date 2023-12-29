@@ -53,10 +53,10 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
   };
 
   React.useEffect(() => {
+    setHasValidConversion(false);
     const newAmountIsValid = amountRegex.test(amount);
     setAmountIsValid(newAmountIsValid);
     if (!newAmountIsValid) {
-      setHasValidConversion(false);
       return;
     }
 
