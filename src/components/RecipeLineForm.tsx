@@ -68,11 +68,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
         setUnit(conversionResult.unitUsed);
         setDensityUsed(conversionResult.density);
         setHasValidConversion(true);
-      } else {
-        setHasValidConversion(false);
       }
-    } else {
-      setHasValidConversion(false);
     }
   }, [amount, unit, ingredient]);
 
@@ -139,7 +135,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
               className="fs-3"
               isValid={unit != ""}
             >
-              <option>- Choose a unit -</option>
+              <option value="">- Choose a unit -</option>
               {unitGroupOptions.map((opt, idx) => (
                 <optgroup label={opt.label} key={idx}>
                   {opt.options.map((o, idx) => (
