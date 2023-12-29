@@ -73,7 +73,7 @@ export function TopNav() {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link
-                href="https://github.com/greenham/volum.io"
+                href="https://github.com/greenham/v2w.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 eventKey="github"

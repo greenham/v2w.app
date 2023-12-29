@@ -33,7 +33,7 @@ export function About() {
         in April of 2014 with jQuery 😱 and upgraded to a React app 🥱 in
         December of 2023. The source code{" "}
         <a
-          href="https://github.com/greenham/volum.io"
+          href="https://github.com/greenham/v2w.app"
           target="_blank"
           rel="noopener noreferrer"
         >
