@@ -63,7 +63,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                       </span>
                     )}
                     {conversionResult.density && (
-                      <span>
+                      <span className="fs-6">
                         <i className="fa-solid fa-flask px-2"></i>
                         <code>
                           {conversionResult.density?.g_whole

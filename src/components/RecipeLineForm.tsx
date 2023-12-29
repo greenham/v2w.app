@@ -43,13 +43,8 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
   };
 
   const handleLineAdd = () => {
-    if (onLineAdd) {
-      onLineAdd({ amount, unit, ingredient });
-    }
+    onLineAdd({ amount, unit, ingredient });
     resetForm();
-
-    // focus on the ingredient input
-    ingredientRef.current?.focus();
   };
 
   React.useEffect(() => {

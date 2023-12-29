@@ -5,7 +5,7 @@ export type TRecipeLine = {
 };
 
 export type TRecipeLineFormProps = {
-  onLineAdd?: (line: TRecipeLine) => void;
+  onLineAdd: (line: TRecipeLine) => void;
 };
 
 export type TRecipeListProps = {
