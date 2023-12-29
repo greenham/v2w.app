@@ -58,10 +58,6 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
     ingredientRef.current?.focus();
   };
 
-  // React.useEffect(() => {
-  //   ingredientRef.current?.focus();
-  // }, []);
-
   React.useEffect(() => {
     if (ingredient) {
       const density = densities.find((d) => d.name === ingredient);
