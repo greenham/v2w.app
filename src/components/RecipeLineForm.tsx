@@ -70,7 +70,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
         setHasValidConversion(true);
       }
     }
-  }, [amount, unit, ingredient]);
+  }, [ingredient, amount, unit]);
 
   return (
     <Container className="p-4 bg-body-tertiary rounded-2">

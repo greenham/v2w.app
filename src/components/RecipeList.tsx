@@ -20,7 +20,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
   }
 
   return (
-    <ListGroup className="h-75 overflow-auto">
+    <ListGroup className="overflow-auto" style={{ maxHeight: "80vh" }}>
       {recipeLines.map((line, idx) => {
         const conversionResult = convertToWeight(
           line.ingredient,
@@ -37,15 +37,47 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                   {line.ingredient}
                 </span>
                 {conversionResult && (
-                  <span>
-                    <i className="fa-solid fa-weight-scale px-2"></i>
-                    <code>
-                      {numberFormatter.format(conversionResult.metricWeight[0])}{" "}
-                    </code>
-                    <small className="text-muted">
-                      {conversionResult.metricWeight[1]}
-                    </small>
-                  </span>
+                  <>
+                    {conversionResult.metricWeight && (
+                      <span>
+                        <i className="fa-solid fa-weight-scale px-2"></i>
+                        <code>
+                          {numberFormatter.format(
+                            conversionResult.metricWeight[0]
+                          )}{" "}
+                        </code>
+                        <small className="text-muted">
+                          {conversionResult.metricWeight[1]}
+                        </small>
+                      </span>
+                    )}
+                    {conversionResult.usWeight && (
+                      <span>
+                        <i className="fa-solid fa-flag-usa px-2"></i>
+                        <code>
+                          {numberFormatter.format(conversionResult.usWeight[0])}{" "}
+                        </code>
+                        <small className="text-muted">
+                          {conversionResult.usWeight[1]}
+                        </small>
+                      </span>
+                    )}
+                    {conversionResult.density && (
+                      <span>
+                        <i className="fa-solid fa-flask px-2"></i>
+                        <code>
+                          {conversionResult.density?.g_whole
+                            ? conversionResult.density.g_whole
+                            : conversionResult.density?.g_ml}
+                        </code>{" "}
+                        <small className="text-body-secondary">
+                          {conversionResult.density?.g_whole
+                            ? "g/whole"
+                            : "g/mL"}
+                        </small>
+                      </span>
+                    )}
+                  </>
                 )}
               </Stack>
               <Button
