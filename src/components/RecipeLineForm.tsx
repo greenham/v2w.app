@@ -290,7 +290,12 @@ export function RecipeLineForm() {
             </Col>
           </Row>
           <Row>
-            <Button variant="outline-success" size="lg" className="fw-bold">
+            <Button
+              variant="outline-success"
+              size="lg"
+              className="fw-bold"
+              disabled
+            >
               <i className="fa-solid fa-plus px-2"></i>Add to recipe
             </Button>
           </Row>
