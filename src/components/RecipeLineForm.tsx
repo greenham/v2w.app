@@ -38,6 +38,7 @@ export function RecipeLineForm() {
   const [usWeight, setUsWeight] = React.useState<[number, string]>();
   const [amountIsValid, setAmountIsValid] = React.useState(false);
   const ingredientRef = React.useRef<TypeaheadRef>(null);
+  const selectedIngredient = undefined;
 
   const resetNewLine = () => {
     setAmount(defaults.amount);
@@ -63,9 +64,9 @@ export function RecipeLineForm() {
   //   }
   // };
 
-  React.useEffect(() => {
-    ingredientRef.current?.focus();
-  }, []);
+  // React.useEffect(() => {
+  //   ingredientRef.current?.focus();
+  // }, []);
 
   React.useEffect(() => {
     if (ingredient) {
@@ -163,7 +164,8 @@ export function RecipeLineForm() {
           size="lg"
           className="mb-3"
           ref={ingredientRef}
-          isInvalid={!ingredient}
+          selected={selectedIngredient}
+          isInvalid={selectedIngredient && !ingredient}
           isValid={!!ingredient}
           onKeyDown={(e) => {
             if (e.key === "Enter" && hasValidConversion) {
@@ -189,7 +191,7 @@ export function RecipeLineForm() {
               size="lg"
               className="fs-3 text-end"
               placeholder="3, 0.5, 1/4, etc."
-              isInvalid={!amountIsValid}
+              isInvalid={amount.length > 0 && !amountIsValid}
               isValid={amountIsValid}
             />
             <Form.Text id="passwordHelpBlock" muted>
