@@ -12,7 +12,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
 
   if (recipeLines.length === 0) {
     return (
-      <div className="position-relative p-5 text-center text-muted bg-body border border-dashed rounded-5">
+      <div className="p-5 text-center text-muted bg-body border border-dark-subtle rounded-2 shadow">
         <h1>Your recipe is empty.</h1>
         <p className="lead">Convert an ingredient and add it here!</p>
       </div>
@@ -20,7 +20,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
   }
 
   return (
-    <ListGroup className="overflow-auto" style={{ maxHeight: "80vh" }}>
+    <ListGroup className="overflow-auto shadow" style={{ maxHeight: "80vh" }}>
       {recipeLines.map((line, idx) => {
         const conversionResult = convertToWeight(
           line.ingredient,

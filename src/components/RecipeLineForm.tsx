@@ -73,7 +73,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
   }, [ingredient, amount, unit]);
 
   return (
-    <Container className="p-4 bg-body-tertiary rounded-2">
+    <Container className="p-4 bg-body-tertiary rounded-2 border border-light-subtle shadow">
       <Form.Group className="mb-3">
         <Form.Label>
           <strong>Ingredient name</strong>
