@@ -25,7 +25,7 @@ const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 export function RecipeLineForm() {
   const defaults = {
     amount: "",
-    unit: "t",
+    unit: "",
     ingredient: "",
   };
 
@@ -189,7 +189,7 @@ export function RecipeLineForm() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               size="lg"
-              className="fs-3 text-end"
+              className="fs-3"
               placeholder="3, 0.5, 1/4, etc."
               isInvalid={amount.length > 0 && !amountIsValid}
               isValid={amountIsValid}
@@ -210,8 +210,9 @@ export function RecipeLineForm() {
               onChange={(e) => setUnit(e.target.value)}
               size="lg"
               className="fs-3"
-              isValid={true}
+              isValid={unit != ""}
             >
+              <option>- Choose a unit -</option>
               {unitGroupOptions.map((opt, idx) => (
                 <optgroup label={opt.label} key={idx}>
                   {opt.options.map((o, idx) => (
