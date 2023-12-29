@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Alert,
-  Badge,
-  Button,
-  Col,
-  FloatingLabel,
-  Form,
-  Row,
-} from "react-bootstrap";
+import { Alert, Badge, Col, FloatingLabel, Form, Row } from "react-bootstrap";
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
 import { unitGroupOptions } from "../constants";
 import densities from "../densities.json";
@@ -28,12 +20,12 @@ export function RecipeLineForm() {
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
   const [densityUsed, setDensityUsed] = React.useState<TIngredientDensity>();
 
-  const resetNewLine = () => {
-    setAmount(defaults.amount);
-    setUnit(defaults.unit);
-    setIngredient(defaults.ingredient);
-    ingredientRef.current?.clear();
-  };
+  // const resetNewLine = () => {
+  //   setAmount(defaults.amount);
+  //   setUnit(defaults.unit);
+  //   setIngredient(defaults.ingredient);
+  //   ingredientRef.current?.clear();
+  // };
 
   // const handleLineAdd = () => {
   //   if (onLineConverted) {

@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import { TopNav } from "./components/TopNav";
-import { RecipeTable } from "./components/RecipeTable";
+// import { RecipeTable } from "./components/RecipeTable";
 import { RecipeLineForm } from "./components/RecipeLineForm";
 
 function App() {
