@@ -10,7 +10,7 @@ import {
   unitGroupOptions,
   unitLabels,
   numberFormatter,
-} from "../converter";
+} from "../constants";
 import { ingredients } from "../App";
 
 export function RecipeLine(props: TRecipeLineProps) {
