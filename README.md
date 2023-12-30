@@ -19,13 +19,13 @@ From [ChefSteps.com](https://www.chefsteps.com/activities/what-you-ll-need-scale
 
 > Just as a good thermometer eliminates a lot of the uncertainty and guesswork from cooking, the ease of quickly weighing ingredients avoids a lot of fumbling around with inaccurate measuring spoons and cups, and increases the consistency of your cooking.
 
-## Allowed Units
+## Supported Units
 
 - US volume units: `t`, `T`, `floz`, `c`, `pt`, `qt`, `gal`
-- US weight units: `oz`, `lb`
 - Metric volume units: `ml`, `dl`, `l`
+- US weight units: `oz`, `lb`
 - Metric weight units: `g`, `kg`
-- For items like eggs, egg whites, egg yolks and sticks of butter, the unit field is ignored.
+- For items like `eggs`, `egg whites`, `egg yolks` and `sticks of butter`, the unit field is ignored.
 
 ## Supported Ingredients
 
