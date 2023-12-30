@@ -87,8 +87,12 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
           isInvalid={selectedIngredient && !ingredient}
           isValid={!!ingredient}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && hasValidConversion) {
-              handleLineAdd();
+            if (e.key === "Enter") {
+              ingredientRef.current?.blur();
+
+              if (hasValidConversion) {
+                handleLineAdd();
+              }
             } else if (e.key === "Escape") {
               ingredientRef.current?.clear();
             }
