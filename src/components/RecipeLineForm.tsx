@@ -17,38 +17,68 @@ const ingredients = densities.map((d) => d.name);
 const amountRegex = /^(\d+(\.\d+)?|\d+\/\d+)$/;
 
 export function RecipeLineForm(props: TRecipeLineFormProps) {
-  const { onLineAdd } = props;
+  const { line, onLineAdd, onLineChange } = props;
   const defaults = {
     amount: "",
     unit: "",
     ingredient: "",
   };
 
-  const [amount, setAmount] = React.useState(defaults.amount);
-  const [unit, setUnit] = React.useState(defaults.unit);
-  const [ingredient, setIngredient] = React.useState(defaults.ingredient);
+  const [amount, setAmount] = React.useState(line?.amount || defaults.amount);
+  const [unit, setUnit] = React.useState(line?.unit || defaults.unit);
+  const [ingredient, setIngredient] = React.useState(
+    line?.ingredient || defaults.ingredient
+  );
   const [hasValidConversion, setHasValidConversion] = React.useState(false);
   const [densityUsed, setDensityUsed] = React.useState<TIngredientDensity>();
   const [metricWeight, setMetricWeight] = React.useState<[number, string]>();
   const [usWeight, setUsWeight] = React.useState<[number, string]>();
   const [amountIsValid, setAmountIsValid] = React.useState(false);
+  const [ingredientInput, setIngredientInput] = React.useState("");
   const ingredientRef = React.useRef<TypeaheadRef>(null);
-  const selectedIngredient = undefined;
 
-  const resetForm = () => {
+  const resetFormToDefaults = () => {
     setAmount(defaults.amount);
     setUnit(defaults.unit);
     setIngredient(defaults.ingredient);
+    setIngredientInput("");
     ingredientRef.current?.clear();
   };
 
+  // const revertFormChanges = () => {
+  //   setAmount(line?.amount || defaults.amount);
+  //   setUnit(line?.unit || defaults.unit);
+  //   setIngredient(line?.ingredient || defaults.ingredient);
+  //   if (line && onLineChange) {
+  //     onLineChange && onLineChange(line);
+  //   }
+  // };
+
+  const cancelEdit = () => {
+    if (line && onLineChange) {
+      onLineChange(line);
+    }
+  };
+
   const handleLineAdd = () => {
-    onLineAdd({ amount, unit, ingredient });
-    resetForm();
+    onLineAdd && onLineAdd({ amount, unit, ingredient });
+    resetFormToDefaults();
+  };
+
+  const handleLineEdit = () => {
+    if (line) {
+      line.amount = amount;
+      line.unit = unit;
+      line.ingredient = ingredient;
+
+      onLineChange && onLineChange(line);
+    }
   };
 
   React.useEffect(() => {
     setHasValidConversion(false);
+
+    // validate amount
     const newAmountIsValid = amountRegex.test(amount);
     setAmountIsValid(newAmountIsValid);
     if (!newAmountIsValid) {
@@ -78,20 +108,25 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
           id="ingredients"
           options={ingredients}
           onChange={(s) => setIngredient(s.toString())}
+          onInputChange={(s) => setIngredientInput(s)}
           placeholder="Start typing an ingredient..."
           inputProps={{ className: "fs-2" }}
           size="lg"
           className="mb-3"
           ref={ingredientRef}
-          selected={selectedIngredient}
-          isInvalid={selectedIngredient && !ingredient}
+          isInvalid={ingredientInput.length > 1 && !ingredient}
           isValid={!!ingredient}
+          defaultSelected={[ingredient]}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               ingredientRef.current?.blur();
 
               if (hasValidConversion) {
-                handleLineAdd();
+                if (!line) {
+                  handleLineAdd();
+                } else {
+                  handleLineEdit();
+                }
               }
             } else if (e.key === "Escape") {
               ingredientRef.current?.clear();
@@ -165,7 +200,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                 <div>
                   <h3 className="fw-bold mb-2 fs-4 text-body-emphasis">
                     <i className="fa-solid fa-weight-scale px-2"></i>
-                    Metric Weight
+                    Metric
                   </h3>
                   <h2>
                     <Badge pill>
@@ -183,7 +218,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
                 <div>
                   <h3 className="fw-bold mb-2 fs-4 text-body-emphasis">
                     <i className="fa-solid fa-flag-usa px-2"></i>
-                    US Weight
+                    US
                   </h3>
                   <h2>
                     <Badge pill>
@@ -218,14 +253,39 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
             </Col>
           </Row>
           <Row>
-            <Button
-              variant="outline-success"
-              size="lg"
-              className="fw-bold"
-              onClick={() => handleLineAdd()}
-            >
-              <i className="fa-solid fa-plus px-2"></i>Add to recipe
-            </Button>
+            {!line && (
+              <Button
+                variant="outline-success"
+                size="lg"
+                className="fw-bold"
+                onClick={() => handleLineAdd()}
+              >
+                <i className="fa-solid fa-plus px-2"></i>Add to recipe
+              </Button>
+            )}
+            {line &&
+              (line.amount != amount ||
+                line.unit != unit ||
+                line.ingredient != ingredient) && (
+                <Row xs={2}>
+                  <Button
+                    variant="outline-secondary"
+                    size="lg"
+                    className="fw-bold"
+                    onClick={() => cancelEdit()}
+                  >
+                    <i className="fa-solid fa-ban px-2"></i>Close without saving
+                  </Button>
+                  <Button
+                    variant="outline-success"
+                    size="lg"
+                    className="fw-bold"
+                    onClick={() => handleLineEdit()}
+                  >
+                    <i className="fa-solid fa-check px-2"></i>Save changes
+                  </Button>
+                </Row>
+              )}
           </Row>
         </Alert>
       )}

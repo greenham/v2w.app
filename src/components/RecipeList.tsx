@@ -3,10 +3,20 @@ import { TRecipeListProps } from "../types";
 import { numberFormatter, unitLabels } from "../constants";
 import { convertToWeight } from "../utils";
 
-export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
+export function RecipeList({
+  recipeLines,
+  onLineRemoved,
+  onLineEdit,
+}: TRecipeListProps) {
   const handleLineRemove = (id: number) => {
     if (id !== undefined && onLineRemoved) {
       onLineRemoved(id);
+    }
+  };
+
+  const handleLineEdit = (id: number) => {
+    if (id !== undefined && onLineEdit) {
+      onLineEdit(id);
     }
   };
 
@@ -32,6 +42,13 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
             <Stack direction="horizontal" className="align-items-start">
               <Stack>
                 <span>
+                  <Button
+                    onClick={() => handleLineEdit(idx)}
+                    size="sm"
+                    variant="outline-dark"
+                  >
+                    <i className="fa-solid fa-pencil"></i>
+                  </Button>{" "}
                   {line.amount}{" "}
                   <small>{unitLabels.get(line.unit) || line.unit}</small>{" "}
                   {line.ingredient}
@@ -40,7 +57,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                   <>
                     {conversionResult.metricWeight && (
                       <span>
-                        <i className="fa-solid fa-weight-scale px-2"></i>
+                        <i className="fa-solid fa-weight-scale fa-xs px-2"></i>
                         <code>
                           {numberFormatter.format(
                             conversionResult.metricWeight[0]
@@ -53,7 +70,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                     )}
                     {conversionResult.usWeight && (
                       <span>
-                        <i className="fa-solid fa-flag-usa px-2"></i>
+                        <i className="fa-solid fa-flag-usa fa-xs px-2"></i>
                         <code>
                           {numberFormatter.format(conversionResult.usWeight[0])}{" "}
                         </code>
@@ -64,7 +81,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                     )}
                     {conversionResult.density && (
                       <span className="fs-6">
-                        <i className="fa-solid fa-flask px-2"></i>
+                        <i className="fa-solid fa-flask fa-xs px-2"></i>
                         <code>
                           {conversionResult.density?.g_whole
                             ? conversionResult.density.g_whole
@@ -84,8 +101,9 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
                 onClick={() => handleLineRemove(idx)}
                 size="sm"
                 className="ms-auto"
+                variant="outline-secondary"
               >
-                X
+                <i className="fa-solid fa-xmark"></i>
               </Button>
             </Stack>
           </ListGroup.Item>

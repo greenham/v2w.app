@@ -5,12 +5,15 @@ export type TRecipeLine = {
 };
 
 export type TRecipeLineFormProps = {
-  onLineAdd: (line: TRecipeLine) => void;
+  line?: TRecipeLine | undefined;
+  onLineAdd?: (line: TRecipeLine) => void;
+  onLineChange?: (line: TRecipeLine) => void;
 };
 
 export type TRecipeListProps = {
   recipeLines: TRecipeLine[];
   onLineRemoved: (id: number) => void;
+  onLineEdit: (id: number) => void;
 };
 
 export type TRecipeLineProps = {
