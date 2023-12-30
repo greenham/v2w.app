@@ -29,7 +29,7 @@ export function RecipeList({ recipeLines, onLineRemoved }: TRecipeListProps) {
         );
         return (
           <ListGroup.Item key={idx} className="fs-5">
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" className="align-items-start">
               <Stack>
                 <span>
                   {line.amount}{" "}
