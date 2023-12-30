@@ -7,7 +7,7 @@ export type TRecipeLine = {
 export type TRecipeLineFormProps = {
   line?: TRecipeLine | undefined;
   onLineAdd?: (line: TRecipeLine) => void;
-  onLineChange?: (line: TRecipeLine) => void;
+  onLineChange?: () => void;
 };
 
 export type TRecipeListProps = {

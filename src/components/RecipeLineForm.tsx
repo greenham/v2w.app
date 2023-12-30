@@ -55,8 +55,8 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
   // };
 
   const cancelEdit = () => {
-    if (line && onLineChange) {
-      onLineChange(line);
+    if (onLineChange) {
+      onLineChange();
     }
   };
 
@@ -71,7 +71,7 @@ export function RecipeLineForm(props: TRecipeLineFormProps) {
       line.unit = unit;
       line.ingredient = ingredient;
 
-      onLineChange && onLineChange(line);
+      onLineChange && onLineChange();
     }
   };
 

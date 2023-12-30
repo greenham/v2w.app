@@ -48,7 +48,7 @@ function RecipeLineFormModal(props: {
   show: boolean;
   onHide: () => void;
 }) {
-  const handleLineChange = (line: TRecipeLine) => {
+  const handleLineChange = () => {
     props.onHide();
   };
   return (
