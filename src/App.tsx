@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Container, Modal, Row } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { TopNav, RecipeLineForm, RecipeList } from "./components";
 import { TRecipeLine } from "./types";
 
@@ -49,7 +49,6 @@ function RecipeLineFormModal(props: {
   onHide: () => void;
 }) {
   const handleLineChange = (line: TRecipeLine) => {
-    console.log("line changed:", line);
     props.onHide();
   };
   return (
@@ -67,6 +66,9 @@ function RecipeLineFormModal(props: {
       <Modal.Body>
         <RecipeLineForm line={props.line} onLineChange={handleLineChange} />
       </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
     </Modal>
   );
 }
