@@ -38,7 +38,7 @@ export function TopNav() {
       </Stack>
       <Offcanvas show={showMenu} onHide={handleCloseMenu} placement="end">
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>
+          <Offcanvas.Title onClick={handleCloseMenu}>
             <i className="fa-solid fa-bars px-2"></i> Menu
           </Offcanvas.Title>
         </Offcanvas.Header>
